@@ -436,10 +436,18 @@ async function loadData() {
     serverDataVersion = serverData.meta.version || 0;
   } catch(e) { console.warn('Cannot fetch server data.json'); }
 
-  // Decide data source
-  if (!local || !local.phases) {
-    // First time: use server data
-    appData = serverData || local || { phases: [] };
+  // Sanity check: is local data healthy?
+  const localTaskCount = (local && local.phases) ? local.phases.reduce((s,p) => s + (p.tasks?p.tasks.length:0), 0) : 0;
+  const localHealthy = local && local.phases && localTaskCount > 0;
+
+  if (!localHealthy) {
+    // Bad or empty local data — use server
+    if (!localHealthy && local && db) {
+      console.warn('Local data corrupted/empty, resetting from server');
+      await dbPut('state', 'appData_backup', local);
+      await resetLocalDB();
+    }
+    appData = serverData || { phases: [] };
     if (serverDataVersion && db) {
       appData.meta._syncedVersion = serverDataVersion;
       await dbPut('state', 'appData', appData);
@@ -458,6 +466,17 @@ async function loadData() {
       }
     }
   }
+}
+
+async function resetLocalDB() {
+  if (!db) return;
+  try { await dbPut('state', 'appData', null); } catch(e) {}
+}
+
+async function forceReset() {
+  if (!confirm('确定清空本地缓存并从服务器重新加载？\n（你在本地的笔记和标签会丢失，服务器数据不受影响）')) return;
+  await resetLocalDB();
+  location.reload();
 }
 
 // Compare key fields between server and local — catches the case where version matches but content is stale
@@ -730,6 +749,9 @@ function render() {
   html += '<span style="margin-left:8px;">|</span>';
   html += '<button class="local-dir-btn" id="localDirBtn" onclick="selectLocalDir()" title="选择本地素材文件夹，上传图片时自动同步">绑定本地目录</button>';
   html += '<span class="local-dir-status" id="localDirStatus" style="display:none" title="已绑定的本地目录"></span>';
+  html += '<span style="margin-left:4px;">|</span>';
+  html += '<button class="local-dir-btn" onclick="forceReset()" title="清空浏览器缓存，从服务器重新加载（页面空白时用）">重置本地</button>';
+  html += '</div>';
   html += '</div>';
 
   html += '<div class="sync-banner" id="syncBanner">';
