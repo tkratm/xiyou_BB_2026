@@ -228,14 +228,11 @@ let currentPhase = null;
 let calYear, calMonth;
 
 const phaseDefaults = [
-  { id:'01', name:'情绪定义', folder:'01_情绪定义', status:'completed', color:'#f0a050', milestone:'2026-07-17', tasks:[], notes:[], uploads:[] },
-  { id:'02', name:'参考素材', folder:'02_参考素材', status:'in_progress', color:'#5b9bd5', milestone:'2026-07-20', tasks:[], notes:[], uploads:[] },
-  { id:'03', name:'镜头设计', folder:'03_镜头设计', status:'pending', color:'#a371f7', milestone:'2026-07-27', tasks:[], notes:[], uploads:[] },
-  { id:'04', name:'AI 原画', folder:'04_AI原画', status:'pending', color:'#d94a4a', milestone:'2026-08-05', tasks:[], notes:[], uploads:[] },
-  { id:'05', name:'手绘精修', folder:'05_手绘精修', status:'pending', color:'#4ecb71', milestone:'2026-08-10', tasks:[], notes:[], uploads:[] },
-  { id:'06', name:'AI 视频', folder:'06_AI视频', status:'pending', color:'#5b9bd5', milestone:'2026-08-17', tasks:[], notes:[], uploads:[] },
-  { id:'07', name:'合成输出', folder:'07_合成输出', status:'pending', color:'#a371f7', milestone:'2026-08-22', tasks:[], notes:[], uploads:[] },
-  { id:'08', name:'UE 还原', folder:'08_UE还原', status:'pending', color:'#d94a4a', milestone:'2026-08-30', tasks:[], notes:[], uploads:[] }
+  { id:'s1', name:'剧本分析与视觉化', folder:'01_剧本视觉化', status:'in_progress', color:'#f0a050', milestone:'2026-07-20', tasks:[], notes:[], uploads:[] },
+  { id:'s2', name:'角色概念设计', folder:'02_角色概念', status:'pending', color:'#e07070', milestone:'2026-07-27', tasks:[], notes:[], uploads:[] },
+  { id:'s3', name:'环境与场景概念', folder:'03_环境场景', status:'pending', color:'#5b9bd5', milestone:'2026-08-03', tasks:[], notes:[], uploads:[] },
+  { id:'s4', name:'故事板与分镜预演', folder:'04_故事板预演', status:'pending', color:'#a371f7', milestone:'2026-08-10', tasks:[], notes:[], uploads:[] },
+  { id:'s5', name:'概念资产交接与统筹', folder:'05_资产交接', status:'pending', color:'#70ad47', milestone:'2026-08-18', tasks:[], notes:[], uploads:[] }
 ];
 
 function initData() {

@@ -1,190 +1,149 @@
 {
   "meta": {
-    "version": "2.0",
+    "version": "3.0",
+    "workflow": "好莱坞5步前期概念管线",
     "project": "碧波烬 · 四镜头切片",
-    "updated": "2026-07-17T13:53:00Z"
+    "updated": "2026-07-17T14:20:00Z"
   },
   "phases": [
     {
-      "id": "01",
-      "name": "情绪定义",
-      "folder": "01_情绪定义",
-      "status": "completed",
-      "color": "#f0a050",
-      "milestone": "2026-07-17",
-      "tasks": [
-        {"id": "t1_1", "text": "确认四角色光色定位（九头虫=阴暗 / 悟空=中性 / 杨戬=光 / 龙女=次级光）", "done": true, "createdAt": "2026-07-17T00:00:00Z"},
-        {"id": "t1_2", "text": "确认四镜头情绪弧线（死别→控诉→暴怒→被放生）", "done": true, "createdAt": "2026-07-17T00:00:00Z"},
-        {"id": "t1_3", "text": "确认九头虫唯一台词", "done": true, "createdAt": "2026-07-17T00:00:00Z"},
-        {"id": "t1_4", "text": "确认悟空核心动机（在九头虫身上看到500年前被围剿的自己）", "done": true, "createdAt": "2026-07-17T00:00:00Z"},
-        {"id": "t1_5", "text": "确认龙女之死留白处理", "done": true, "createdAt": "2026-07-17T00:00:00Z"},
-        {"id": "t1_6", "text": "确认光线时间线（镜头1-3黎明前暗调 → 镜头4黎明+水面神光）", "done": true, "createdAt": "2026-07-17T00:00:00Z"},
-        {"id": "t1_7", "text": "确认创意边界（五件不做的事）", "done": true, "createdAt": "2026-07-17T00:00:00Z"},
-        {"id": "t1_8", "text": "活阎王签字确认 → 进入 Phase 2", "done": true, "createdAt": "2026-07-17T00:00:00Z"}
-      ],
-      "notes": [
-        {"id": "n1_1", "text": "情绪弧线：死别→控诉→暴怒→被放生。九头虫从绝望到拼命，悟空共情给了一条命", "createdAt": "2026-07-17T00:00:00Z", "author": "活阎王"},
-        {"id": "n1_2", "text": "角色光色：九头虫=阴暗 / 悟空=中性 / 杨戬=光 / 龙女=光(低于杨戬)", "createdAt": "2026-07-17T00:00:00Z", "author": "活阎王"},
-        {"id": "n1_3", "text": "九头虫没变身之前就已经很强了。四镜头是他的情绪旅程", "createdAt": "2026-07-17T00:00:00Z", "author": "活阎王"},
-        {"id": "n1_4", "text": "龙女之死不交代——留白比交代有力量。观众只看到结局", "createdAt": "2026-07-17T00:00:00Z", "author": "活阎王"},
-        {"id": "n1_5", "text": "悟空的轻——金箍棒拦杨戬是够了，不是住手", "createdAt": "2026-07-17T00:00:00Z", "author": "活阎王"}
-      ],
-      "uploads": []
-    },
-    {
-      "id": "02",
-      "name": "参考素材",
-      "folder": "02_参考素材",
+      "id": "s1",
+      "name": "剧本分析与视觉化",
+      "folder": "01_剧本视觉化",
       "status": "in_progress",
-      "color": "#5b9bd5",
+      "color": "#f0a050",
       "milestone": "2026-07-20",
       "tasks": [
-        {"id": "t2_1", "text": "搜集九头虫角色参考（阴暗系妖怪形象）", "done": false, "createdAt": "2026-07-17T00:00:00Z"},
-        {"id": "t2_2", "text": "搜集孙悟空角色参考（中性色调、沉稳）", "done": false, "createdAt": "2026-07-17T00:00:00Z"},
-        {"id": "t2_3", "text": "搜集杨戬角色参考（光系、天界执法者）", "done": false, "createdAt": "2026-07-17T00:00:00Z"},
-        {"id": "t2_4", "text": "搜集龙女角色参考（光、比杨戬低一级）", "done": false, "createdAt": "2026-07-17T00:00:00Z"},
-        {"id": "t2_5", "text": "搜集碧波潭水下场景参考（深水暗流、沉入视角）", "done": false, "createdAt": "2026-07-17T00:00:00Z"},
-        {"id": "t2_6", "text": "搜集黎明光线参考（从暗到明的渐变）", "done": false, "createdAt": "2026-07-17T00:00:00Z"},
-        {"id": "t2_7", "text": "搜集四镜头动作参考（放手沉入/特写控诉/变身迈步/拦棒飞天）", "done": false, "createdAt": "2026-07-17T00:00:00Z"},
-        {"id": "t2_8", "text": "搜集镜头语言参考（广角/特写/仰角/长焦）", "done": false, "createdAt": "2026-07-17T00:00:00Z"},
-        {"id": "t2_9", "text": "整理参考素材库文档 + 情绪板可视化", "done": false, "createdAt": "2026-07-17T00:00:00Z"},
-        {"id": "t2_10", "text": "活阎王确认参考素材方向 → 进入 Phase 3", "done": false, "createdAt": "2026-07-17T00:00:00Z"}
+        {"id": "s1_1", "text": "确认四角色光色定位", "done": true},
+        {"id": "s1_2", "text": "确认四镜头情绪弧线（死别→控诉→暴怒→被放生）", "done": true},
+        {"id": "s1_3", "text": "确认九头虫台词", "done": true},
+        {"id": "s1_4", "text": "确认悟空动机（在九头虫身上看到500年前被围剿的自己）", "done": true},
+        {"id": "s1_5", "text": "确认龙女之死留白", "done": true},
+        {"id": "s1_6", "text": "确认光线时间线（黎明前暗调→黎明神光）", "done": true},
+        {"id": "s1_7", "text": "确认创意边界（五不做）", "done": true},
+        {"id": "s1_8", "text": "活阎王签字确认 ✅", "done": true},
+        {"id": "s1_9", "text": "搜集四角色视觉参考（服装/体态/面部）", "done": false},
+        {"id": "s1_10", "text": "搜集场景视觉参考（碧波潭水下/岸边/北海方向/黎明天际）", "done": false},
+        {"id": "s1_11", "text": "搜集光影参考（黎明前暗调→黎明渐变色调）", "done": false},
+        {"id": "s1_12", "text": "搜集镜头语言参考（水下/特写/变身/飞行）", "done": false},
+        {"id": "s1_13", "text": "LLM 生成四镜头视觉描述 Prompt 数据库", "done": false},
+        {"id": "s1_14", "text": "制作视觉意向板（Mood Board）", "done": false},
+        {"id": "s1_15", "text": "活阎王确认意向板 → 进入 Step 2", "done": false}
       ],
       "notes": [
-        {"id": "n2_1", "text": "活阎王说稍后会提供参考视频和图片素材", "createdAt": "2026-07-17T00:00:00Z", "author": "弼马温"}
+        {"id": "ns1_1", "text": "情绪弧线：死别→控诉→暴怒→被放生。九头虫从绝望到拼命，悟空共情给了一条命", "author": "活阎王"},
+        {"id": "ns1_2", "text": "角色光色：九头虫=阴暗 / 悟空=中性 / 杨戬=光 / 龙女=光(低于杨戬)。镜头4黎明时碧波潭水面因龙女泛起神光", "author": "活阎王"},
+        {"id": "ns1_3", "text": "九头虫没变身之前就已经很强了。四镜头是情绪旅程，不是战力展示", "author": "活阎王"},
+        {"id": "ns1_4", "text": "龙女之死不交代——留白比交代有力量", "author": "活阎王"},
+        {"id": "ns1_5", "text": "悟空拦杨戬的轻——金箍棒轻碰三尖两刃刀，是够了不是住手", "author": "活阎王"},
+        {"id": "ns1_6", "text": "v1.0 情绪定义文档已定稿：01_剧本视觉化/1.0_情绪定义_v2.0_20260717.md", "author": "弼马温"},
+        {"id": "ns1_7", "text": "参考素材文档已迁移：01_剧本视觉化/2.1_影视镜头音乐参考_20260717.md", "author": "弼马温"}
       ],
       "uploads": []
     },
     {
-      "id": "03",
-      "name": "镜头设计",
-      "folder": "03_镜头设计",
+      "id": "s2",
+      "name": "角色概念设计",
+      "folder": "02_角色概念",
       "status": "pending",
-      "color": "#a371f7",
+      "color": "#e07070",
       "milestone": "2026-07-27",
       "tasks": [
-        {"id": "t3_1", "text": "镜头1详细设计：九头虫放手，龙女沉入碧波潭深处", "done": false, "createdAt": "2026-07-17T00:00:00Z"},
-        {"id": "t3_2", "text": "镜头2详细设计：九头虫脸部特写 + 台词同步", "done": false, "createdAt": "2026-07-17T00:00:00Z"},
-        {"id": "t3_3", "text": "镜头3详细设计：九头虫变九头怪，迈前一步殊死一搏", "done": false, "createdAt": "2026-07-17T00:00:00Z"},
-        {"id": "t3_4", "text": "镜头4详细设计：悟空拦杨戬，九头虫飞向北海", "done": false, "createdAt": "2026-07-17T00:00:00Z"},
-        {"id": "t3_5", "text": "四镜头节奏定调：静→紧→动→开", "done": false, "createdAt": "2026-07-17T00:00:00Z"},
-        {"id": "t3_6", "text": "绘制镜头故事板草图", "done": false, "createdAt": "2026-07-17T00:00:00Z"},
-        {"id": "t3_7", "text": "确认每个镜头时长感（秒数预估）", "done": false, "createdAt": "2026-07-17T00:00:00Z"},
-        {"id": "t3_8", "text": "活阎王确认镜头设计 → 进入 Phase 4", "done": false, "createdAt": "2026-07-17T00:00:00Z"}
-      ],
-      "notes": [],
-      "uploads": []
-    },
-    {
-      "id": "04",
-      "name": "AI 原画",
-      "folder": "04_AI原画",
-      "status": "pending",
-      "color": "#d94a4a",
-      "milestone": "2026-08-05",
-      "tasks": [
-        {"id": "t4_1", "text": "镜头1 AI关键帧：龙女沉入碧波潭（3-5版选1张定稿）", "done": false, "createdAt": "2026-07-17T00:00:00Z"},
-        {"id": "t4_2", "text": "镜头2 AI关键帧：九头虫脸部特写（3-5版选1张定稿）", "done": false, "createdAt": "2026-07-17T00:00:00Z"},
-        {"id": "t4_3", "text": "镜头3 AI关键帧：九头虫变身九头怪（3-5版选1张定稿）", "done": false, "createdAt": "2026-07-17T00:00:00Z"},
-        {"id": "t4_4", "text": "镜头4 AI关键帧：悟空拦杨戬+九头虫飞天（3-5版选1张定稿）", "done": false, "createdAt": "2026-07-17T00:00:00Z"},
-        {"id": "t4_5", "text": "统一四张关键帧的色调和风格一致性", "done": false, "createdAt": "2026-07-17T00:00:00Z"},
-        {"id": "t4_6", "text": "配置 ComfyUI 工作流（SDXL + LoRA + ControlNet双控）", "done": false, "createdAt": "2026-07-17T00:00:00Z"},
-        {"id": "t4_7", "text": "输出高分辨率定稿帧（4K+）", "done": false, "createdAt": "2026-07-17T00:00:00Z"},
-        {"id": "t4_8", "text": "整理 AI 原画归档（prompt + workflow + 出图）", "done": false, "createdAt": "2026-07-17T00:00:00Z"},
-        {"id": "t4_9", "text": "活阎王确认四张关键帧 → 进入 Phase 5", "done": false, "createdAt": "2026-07-17T00:00:00Z"}
+        {"id": "s2_1", "text": "九头虫：人形态设定（面部特征/体型/服饰/气质：阴暗不邪恶）", "done": false},
+        {"id": "s2_2", "text": "九头虫：变身后的九头怪形态（尺度/造型/与龙族的关联）", "done": false},
+        {"id": "s2_3", "text": "九头虫：三视图 + 面部特写", "done": false},
+        {"id": "s2_4", "text": "孙悟空：中性色调定位（不亮不暗，成佛后的内敛威压感）", "done": false},
+        {"id": "s2_5", "text": "孙悟空：三视图 + 面部特写", "done": false},
+        {"id": "s2_6", "text": "杨戬：天界光感定位（三尖两刃刀/铠甲/光明不刺眼）", "done": false},
+        {"id": "s2_7", "text": "杨戬：三视图 + 面部特写", "done": false},
+        {"id": "s2_8", "text": "龙女：水中沉入状态（衣裙漂浮/头发散开/微光/静谧不恐怖）", "done": false},
+        {"id": "s2_9", "text": "龙女：面部特写（闭眼/安详/不是恐惧）", "done": false},
+        {"id": "s2_10", "text": "AI 出图：每角色 3-5 版概念图（ComfyUI SDXL + LoRA + ControlNet）", "done": false},
+        {"id": "s2_11", "text": "活阎王手绘精修四角色定稿", "done": false},
+        {"id": "s2_12", "text": "活阎王确认角色设定 → 进入 Step 3", "done": false}
       ],
       "notes": [
-        {"id": "n4_1", "text": "工具链：ComfyUI SDXL 1.0 + LoRA(国画水墨/东方仙侠/cinematic_lighting) + ControlNet(Canny 0.7 + Depth 0.5)", "createdAt": "2026-07-17T00:00:00Z", "author": "弼马温"},
-        {"id": "n4_2", "text": "21:9 宽银幕比例 1472×704，euler_ancestral / 25 steps / CFG 7.5", "createdAt": "2026-07-17T00:00:00Z", "author": "弼马温"}
+        {"id": "ns2_1", "text": "AI工具链：ComfyUI SDXL 1.0 + 东方仙侠LoRA + cinematic_lighting LoRA + ControlNet(Canny 0.7 + Depth 0.5)", "author": "弼马温"},
+        {"id": "ns2_2", "text": "输出规格：宽银幕21:9 → 1472×704，euler_ancestral/25 steps/CFG 7.5", "author": "弼马温"},
+        {"id": "ns2_3", "text": "九头虫设计要点：阴暗但不邪恶。观众要共情他，不是怕他。变身后是回归本相", "author": "弼马温"}
       ],
       "uploads": []
     },
     {
-      "id": "05",
-      "name": "手绘精修",
-      "folder": "05_手绘精修",
-      "status": "pending",
-      "color": "#4ecb71",
-      "milestone": "2026-08-10",
-      "tasks": [
-        {"id": "t5_1", "text": "逐一检查四张关键帧的AI弱点（手/脸/眼神/动态线）", "done": false, "createdAt": "2026-07-17T00:00:00Z"},
-        {"id": "t5_2", "text": "镜头1手绘精修 + 角色表情修正", "done": false, "createdAt": "2026-07-17T00:00:00Z"},
-        {"id": "t5_3", "text": "镜头2手绘精修 + 角色表情修正", "done": false, "createdAt": "2026-07-17T00:00:00Z"},
-        {"id": "t5_4", "text": "镜头3手绘精修 + 角色表情修正", "done": false, "createdAt": "2026-07-17T00:00:00Z"},
-        {"id": "t5_5", "text": "镜头4手绘精修 + 角色表情修正", "done": false, "createdAt": "2026-07-17T00:00:00Z"},
-        {"id": "t5_6", "text": "四张定稿帧最终确认 → 进入 Phase 6", "done": false, "createdAt": "2026-07-17T00:00:00Z"}
-      ],
-      "notes": [
-        {"id": "n5_1", "text": "AI强的部分保留，只修AI弱点。不动AI出图的色彩和氛围大势", "createdAt": "2026-07-17T00:00:00Z", "author": "弼马温"}
-      ],
-      "uploads": []
-    },
-    {
-      "id": "06",
-      "name": "AI 视频",
-      "folder": "06_AI视频",
+      "id": "s3",
+      "name": "环境与场景概念",
+      "folder": "03_环境场景",
       "status": "pending",
       "color": "#5b9bd5",
-      "milestone": "2026-08-17",
+      "milestone": "2026-08-03",
       "tasks": [
-        {"id": "t6_1", "text": "评估选AI视频工具（Runway / Kling / 可灵 / Sora）", "done": false, "createdAt": "2026-07-17T00:00:00Z"},
-        {"id": "t6_2", "text": "镜头1视频生成：龙女沉入深潭（水下沉降效果）", "done": false, "createdAt": "2026-07-17T00:00:00Z"},
-        {"id": "t6_3", "text": "镜头2视频生成：九头虫脸部特写 + 台词口型同步", "done": false, "createdAt": "2026-07-17T00:00:00Z"},
-        {"id": "t6_4", "text": "镜头3视频生成：九头虫变身九头怪迈步", "done": false, "createdAt": "2026-07-17T00:00:00Z"},
-        {"id": "t6_5", "text": "镜头4视频生成：悟空拦杨戬 + 九头虫飞向北海", "done": false, "createdAt": "2026-07-17T00:00:00Z"},
-        {"id": "t6_6", "text": "四段视频风格一致性调优", "done": false, "createdAt": "2026-07-17T00:00:00Z"},
-        {"id": "t6_7", "text": "视频稳定性检查（画面抖动、变形修正）", "done": false, "createdAt": "2026-07-17T00:00:00Z"},
-        {"id": "t6_8", "text": "色导出原始视频片段", "done": false, "createdAt": "2026-07-17T00:00:00Z"},
-        {"id": "t6_9", "text": "活阎王确认四段视频 → 进入 Phase 7", "done": false, "createdAt": "2026-07-17T00:00:00Z"}
+        {"id": "s3_1", "text": "碧波潭水下场景：龙女沉入方向/深度感/水下光折射", "done": false},
+        {"id": "s3_2", "text": "碧波潭水面：黎明破晓+龙女神光泛起的水面效果", "done": false},
+        {"id": "s3_3", "text": "岸边战场：九头虫站立位置/对战痕迹/环境关系", "done": false},
+        {"id": "s3_4", "text": "北海方向天际线：拂晓/冷色远山/飞行路径", "done": false},
+        {"id": "s3_5", "text": "色彩脚本（Color Script）：黎明前暗调→黎明渐变 4 帧色板", "done": false},
+        {"id": "s3_6", "text": "AI 出图：四镜头各 2-3 张环境概念图（AI + 手绘精修）", "done": false},
+        {"id": "s3_7", "text": "关键帧插画：四镜头最高情感瞬间（放手/控诉/变身/拦棒）", "done": false},
+        {"id": "s3_8", "text": "活阎王确认场景概念 → 进入 Step 4", "done": false}
       ],
       "notes": [
-        {"id": "n6_1", "text": "镜头2台词口型同步是最大技术难点，需优先测试", "createdAt": "2026-07-17T00:00:00Z", "author": "弼马温"}
+        {"id": "ns3_1", "text": "色彩渐变线：镜头1 RGB(5,8,25) → 镜头4 RGB(40,55,80)+水面神光(200,180,120)", "author": "弼马温"},
+        {"id": "ns3_2", "text": "团队参考：teamLab Planets（空间叙事）+ Refik Anadol（流动色彩）+ Olafur Eliasson（材质真实）", "author": "弼马温"}
       ],
       "uploads": []
     },
     {
-      "id": "07",
-      "name": "合成输出",
-      "folder": "07_合成输出",
+      "id": "s4",
+      "name": "故事板与分镜预演",
+      "folder": "04_故事板预演",
       "status": "pending",
       "color": "#a371f7",
-      "milestone": "2026-08-22",
+      "milestone": "2026-08-10",
       "tasks": [
-        {"id": "t7_1", "text": "四段视频剪辑 + 转场设计（静→紧→动→开节奏）", "done": false, "createdAt": "2026-07-17T00:00:00Z"},
-        {"id": "t7_2", "text": "全局调色：暗部不死黑（luma 5-15%），第4镜黎明暖光渐变", "done": false, "createdAt": "2026-07-17T00:00:00Z"},
-        {"id": "t7_3", "text": "声音设计：水声→沉默→爆发→呼吸→弦乐", "done": false, "createdAt": "2026-07-17T00:00:00Z"},
-        {"id": "t7_4", "text": "镜头2台词配音同步", "done": false, "createdAt": "2026-07-17T00:00:00Z"},
-        {"id": "t7_5", "text": "碧波潭水面神光效果叠加（镜头4）", "done": false, "createdAt": "2026-07-17T00:00:00Z"},
-        {"id": "t7_6", "text": "字幕/片头片尾制作", "done": false, "createdAt": "2026-07-17T00:00:00Z"},
-        {"id": "t7_7", "text": "最终渲染输出（4K+）", "done": false, "createdAt": "2026-07-17T00:00:00Z"},
-        {"id": "t7_8", "text": "活阎王确认成片 → 进入 Phase 8", "done": false, "createdAt": "2026-07-17T00:00:00Z"}
+        {"id": "s4_1", "text": "四镜头分镜脚本细化（景别/运镜/时长/转场）", "done": false},
+        {"id": "s4_2", "text": "节奏测试：静→紧→动→开 曲线确认", "done": false},
+        {"id": "s4_3", "text": "镜头1 定稿帧：放手沉入（AI + 手绘精修）", "done": false},
+        {"id": "s4_4", "text": "镜头2 定稿帧：脸部特写+台词（AI + 手绘精修）", "done": false},
+        {"id": "s4_5", "text": "镜头3 定稿帧：变身迈步（AI + 手绘精修）", "done": false},
+        {"id": "s4_6", "text": "镜头4 定稿帧：拦棒+飞天（AI + 手绘精修）", "done": false},
+        {"id": "s4_7", "text": "镜头1 AI视频生成（Runway/Kling）", "done": false},
+        {"id": "s4_8", "text": "镜头2 AI视频生成（台词同步最难）", "done": false},
+        {"id": "s4_9", "text": "镜头3 AI视频生成（变身动态最复杂）", "done": false},
+        {"id": "s4_10", "text": "镜头4 AI视频生成（拦棒→飞天→黎明神光）", "done": false},
+        {"id": "s4_11", "text": "四镜头粗剪 + 节奏调整（Animatic）", "done": false},
+        {"id": "s4_12", "text": "调色统一（暗部不黑，luma 5-15%）+ 声音设计", "done": false},
+        {"id": "s4_13", "text": "最终合成输出 + 活阎王确认成片 → 进入 Step 5", "done": false}
       ],
       "notes": [
-        {"id": "n7_1", "text": "声音是情绪的另一半——沉默比音乐更重要，水声是贯穿线索", "createdAt": "2026-07-17T00:00:00Z", "author": "弼马温"}
+        {"id": "ns4_1", "text": "镜头2台词同步方案：Kling 1.6 Lip Sync / Runway Act-One / 或内心独白不追求精确对嘴", "author": "弼马温"},
+        {"id": "ns4_2", "text": "镜头3变身方案：人形态→闪白/能量爆发→九头怪分段生成，闪白遮掩AI不稳定区域", "author": "弼马温"},
+        {"id": "ns4_3", "text": "总片长预估：12-18秒。四镜头分布：3-5s / 2-3s / 2-3s / 4-6s", "author": "弼马温"},
+        {"id": "ns4_4", "text": "声音设计方向：水声→沉默→变身轰鸣→金属轻响→风起→弦乐", "author": "弼马温"}
       ],
       "uploads": []
     },
     {
-      "id": "08",
-      "name": "UE 还原",
-      "folder": "08_UE还原",
+      "id": "s5",
+      "name": "概念资产交接与统筹",
+      "folder": "05_资产交接",
       "status": "pending",
-      "color": "#d94a4a",
-      "milestone": "2026-08-30",
+      "color": "#70ad47",
+      "milestone": "2026-08-18",
       "tasks": [
-        {"id": "t8_1", "text": "对照成片分析UE需还原的场景元素清单", "done": false, "createdAt": "2026-07-17T00:00:00Z"},
-        {"id": "t8_2", "text": "碧波潭水下场景建模 + 材质", "done": false, "createdAt": "2026-07-17T00:00:00Z"},
-        {"id": "t8_3", "text": "四角色3D模型制作（九头虫/悟空/杨戬/龙女）", "done": false, "createdAt": "2026-07-17T00:00:00Z"},
-        {"id": "t8_4", "text": "灯光系统搭建（黎明前暗调 + 黎明渐变 + 水面神光）", "done": false, "createdAt": "2026-07-17T00:00:00Z"},
-        {"id": "t8_5", "text": "特效制作（水下粒子/体光/九头虫变身/神光）", "done": false, "createdAt": "2026-07-17T00:00:00Z"},
-        {"id": "t8_6", "text": "四镜头UE相机动画还原", "done": false, "createdAt": "2026-07-17T00:00:00Z"},
-        {"id": "t8_7", "text": "渲染输出 + 与AI成片对比调优", "done": false, "createdAt": "2026-07-17T00:00:00Z"},
-        {"id": "t8_8", "text": "3D场景文件归档", "done": false, "createdAt": "2026-07-17T00:00:00Z"},
-        {"id": "t8_9", "text": "活阎王最终确认 → 项目完结", "done": false, "createdAt": "2026-07-17T00:00:00Z"}
+        {"id": "s5_1", "text": "整理全部定稿关键帧（源文件 PSD + 高清 4K PNG）", "done": false},
+        {"id": "s5_2", "text": "素材文件清单索引（按角色/场景/镜头分类）", "done": false},
+        {"id": "s5_3", "text": "材质球参考：水下岩石/水体/皮肤/服装/铠甲", "done": false},
+        {"id": "s5_4", "text": "灯光标准文档：四镜头 Key/Fill/Rim/Amb 参数表", "done": false},
+        {"id": "s5_5", "text": "尺寸比例参考：四角色身高/体型/场景空间尺寸", "done": false},
+        {"id": "s5_6", "text": "色彩管理：全片 LUT + 色调映射规范", "done": false},
+        {"id": "s5_7", "text": "UE 场景搭建：碧波潭水下 + 岸边战场", "done": false},
+        {"id": "s5_8", "text": "UE 灯光还原：四镜头逐镜灯光方案", "done": false},
+        {"id": "s5_9", "text": "UE 特效还原：Niagara 粒子（气泡/能量光/水面神光）", "done": false},
+        {"id": "s5_10", "text": "最终审查 + Production Bible 打包", "done": false}
       ],
       "notes": [
-        {"id": "n8_1", "text": "UE还原阶段：照抄AI成片的氛围和构图，不要自己发挥", "createdAt": "2026-07-17T00:00:00Z", "author": "弼马温"},
-        {"id": "n8_2", "text": "工具栈：Lumen + Substrate + MegaLights + Niagara + Water Plugin", "createdAt": "2026-07-17T00:00:00Z", "author": "弼马温"}
+        {"id": "ns5_1", "text": "UE工具栈：Lumen + Substrate + MegaLights + VSM + Water Plugin + Niagara Fluids + MRQ", "author": "弼马温"},
+        {"id": "ns5_2", "text": "此阶段不创作，只还原——按前四步产出的概念图和视频照抄施工", "author": "弼马温"}
       ],
       "uploads": []
     }
