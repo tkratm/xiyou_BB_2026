@@ -505,11 +505,11 @@ async function doSync() {
     for (const t of p.tasks) {
       const lt = localTasks[t.id];
       if (lt) {
-        // Keep user's edits: description, notes, status, tags
-        t.description = lt.description;
-        t.notes = lt.notes;
-        t.status = lt.status;
-        t.tags = lt.tags || [];
+        // Only keep local edits if local field is non-empty; otherwise keep server value
+        if (lt.description && lt.description.trim()) t.description = lt.description;
+        if (lt.notes && lt.notes.trim()) t.notes = lt.notes;
+        if (lt.status) t.status = lt.status;
+        if (lt.tags && lt.tags.length > 0) t.tags = lt.tags;
       }
     }
     // Also merge any tasks that exist only in local (user-created)
