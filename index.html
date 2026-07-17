@@ -533,6 +533,37 @@ async function doSync() {
   if (status) { status.textContent = '已同步 v' + serverDataVersion; status.className = 'sync-status ok'; }
 }
 
+// Manual check for server updates — force re-fetch and show banner if newer
+async function checkForUpdates() {
+  const status = document.getElementById('syncStatus');
+  if (status) { status.textContent = '检查中...'; status.className = 'sync-status'; }
+  try {
+    const resp = await fetch(SERVER_DATA_URL + '?t=' + Date.now());
+    const server = await resp.json();
+    const v = server.meta.version || 0;
+    serverDataVersion = v;
+    const localV = (appData.meta && appData.meta._syncedVersion) || 0;
+    const diff = checkContentDiff(server, appData);
+    console.log('[checkForUpdates] server v' + v + ' / local v' + localV + ' / diff:', diff);
+    if (v > localV || diff) {
+      pendingServerData = server;
+      const banner = document.getElementById('syncBanner');
+      const text = document.getElementById('syncBannerText');
+      if (banner && text) {
+        text.textContent = '弼马温更新了任务板 · 服务器 v' + v + ' (本地 v' + localV + ') ' + diff;
+        banner.classList.add('show');
+        banner.scrollIntoView({behavior: 'smooth', block: 'start'});
+      }
+      if (status) { status.textContent = '发现更新'; status.className = 'sync-status warn'; }
+    } else {
+      if (status) { status.textContent = '已是最新 v' + v; status.className = 'sync-status ok'; }
+    }
+  } catch (e) {
+    console.error(e);
+    if (status) { status.textContent = '检查失败: ' + e.message; status.className = 'sync-status err'; }
+  }
+}
+
 function dismissSync() {
   pendingServerData = null;
   const banner = document.getElementById('syncBanner');
@@ -623,7 +654,7 @@ function render() {
 
   html += '<div class="toolbar">';
   html += '<div><span class="sync-status" id="syncStatus"></span></div>';
-  html += '<button class="sync-btn" onclick="syncFromGitHub()">GitHub Sync</button>';
+  html += '<button class="sync-btn" onclick="checkForUpdates()">检查更新</button> <button class="sync-btn" onclick="syncFromGitHub()">GitHub Sync</button>';
   html += '</div>';
 
   html += '<div class="sync-banner" id="syncBanner">';
