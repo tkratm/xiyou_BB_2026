@@ -61,6 +61,28 @@ body {
   letter-spacing: 1px;
 }
 
+/* Sync banner */
+.sync-banner {
+  display: none; align-items: center; gap: 12px;
+  padding: 12px 18px; margin-bottom: 18px; border-radius: var(--radius-sm);
+  background: rgba(196,154,108,0.12); border: 1px solid rgba(196,154,108,0.3);
+  color: var(--gold-dim); font-size: 14px;
+}
+.sync-banner.show { display: flex; }
+.sync-banner .sync-banner-text { flex: 1; }
+.sync-banner .sync-banner-btn {
+  font-size: 13px; padding: 6px 18px; border-radius: 4px;
+  background: var(--gold); border: none; color: white;
+  cursor: pointer; font-family: var(--font-body);
+  transition: all 0.2s;
+}
+.sync-banner .sync-banner-btn:hover { background: var(--gold-dim); }
+.sync-banner .sync-banner-dismiss {
+  font-size: 13px; padding: 6px 12px; background: transparent;
+  border: 0.5px solid var(--border); border-radius: 4px;
+  color: var(--text-tertiary); cursor: pointer; font-family: var(--font-body);
+}
+
 .toolbar {
   display: flex; align-items: center; justify-content: space-between;
   margin: 28px 0 10px;
@@ -147,7 +169,7 @@ body {
 .task-check.done { border-color: var(--accent); background: var(--accent); }
 .task-check.done::after { content: ''; display: block; width: 5px; height: 10px; border: solid white; border-width: 0 1.5px 1.5px 0; transform: rotate(45deg) translateY(-1px); }
 .task-name { flex: 1; font-size: 16px; min-width: 0; }
-.task-name.completed { color: var(--text-tertiary); text-decoration: line-through; }
+.task-name.completed { color: var(--text-tertiary); opacity: 0.65; }
 .task-tags { display: flex; gap: 4px; flex-shrink: 0; }
 .task-tag {
   font-size: 12px; padding: 2px 8px; border-radius: 3px;
@@ -216,8 +238,8 @@ body {
 .modal-overlay.open { display: flex; }
 .modal {
   background: var(--bg-card); border: 1px solid var(--border-active);
-  border-radius: var(--radius-lg); padding: 32px; width: 700px;
-  max-height: 85vh; overflow-y: auto; max-width: 95vw;
+  border-radius: var(--radius-lg); padding: 36px; width: 920px;
+  max-height: 88vh; overflow-y: auto; max-width: 96vw;
   box-shadow: 0 4px 20px rgba(0,0,0,0.10);
 }
 .modal-title-row { display: flex; align-items: center; gap: 14px; margin-bottom: 24px; }
@@ -226,15 +248,15 @@ body {
   background: rgba(106,143,160,0.10); padding: 4px 14px; border-radius: 3px;
 }
 .modal-title-input {
-  flex: 1; font-family: var(--font-heading); font-size: 20px; font-weight: 600;
+  flex: 1; font-family: var(--font-heading); font-size: 22px; font-weight: 600;
   background: transparent; border: none; border-bottom: 2px dashed var(--border);
   color: var(--text-primary); outline: none; letter-spacing: 1px;
 }
 .modal-title-input:focus { border-bottom-color: var(--accent); }
-.modal-body { display: flex; gap: 22px; margin-bottom: 22px; }
-.modal-image-area { width: 260px; flex-shrink: 0; }
+.modal-body { display: flex; gap: 24px; margin-bottom: 24px; }
+.modal-image-area { width: 280px; flex-shrink: 0; }
 .modal-image {
-  width: 260px; height: 170px; border-radius: var(--radius-sm);
+  width: 280px; height: 180px; border-radius: var(--radius-sm);
   background: var(--bg-input); border: 1px dashed var(--border);
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   cursor: pointer; overflow: hidden; position: relative;
@@ -255,7 +277,7 @@ body {
 .modal-detail { flex: 1; min-width: 0; }
 .modal-label { font-size: 12px; color: var(--text-tertiary); margin-bottom: 5px; letter-spacing: 1px; }
 .modal-desc {
-  width: 100%; min-height: 72px; background: var(--bg-input);
+  width: 100%; min-height: 120px; background: var(--bg-input);
   border: 0.5px solid var(--border); border-radius: var(--radius-sm);
   color: var(--text-primary); font-size: 15px; font-family: var(--font-body);
   padding: 12px; resize: vertical; outline: none; margin-bottom: 18px;
@@ -277,7 +299,7 @@ body {
 }
 .modal-notes:focus { border-color: var(--accent); }
 .notes-display {
-  width: 100%; min-height: 120px; max-height: 440px; overflow-y: auto;
+  width: 100%; min-height: 140px; max-height: 560px; overflow-y: auto;
   background: var(--bg-input); border: 0.5px solid var(--border);
   border-radius: var(--radius-sm); color: var(--text-primary);
   font-size: 14px; font-family: var(--font-body); padding: 14px;
@@ -385,14 +407,115 @@ function dbPut(store, key, val) {
   });
 }
 
+const SERVER_DATA_URL = 'data.json';
+let serverDataVersion = 0;
+
 async function loadData() {
   try { await openDB(); } catch(e) { console.warn('IndexedDB failed, using memory only'); }
-  let saved = null;
-  if (db) saved = await dbGet('state', 'appData');
-  if (saved && saved.phases) { appData = saved; return; }
-  const resp = await fetch('data.json');
-  appData = await resp.json();
+  let local = null, localVersion = 0;
+  if (db) { local = await dbGet('state', 'appData'); if (local && local.meta) localVersion = local.meta._syncedVersion || 0; }
+
+  // Always fetch server version in background
+  let serverData = null;
+  try {
+    const resp = await fetch(SERVER_DATA_URL + '?t=' + Date.now());
+    serverData = await resp.json();
+    serverDataVersion = serverData.meta.version || 0;
+  } catch(e) { console.warn('Cannot fetch server data.json'); }
+
+  // Decide data source
+  if (!local || !local.phases) {
+    // First time: use server data
+    appData = serverData || local || { phases: [] };
+    if (serverDataVersion && db) {
+      appData.meta._syncedVersion = serverDataVersion;
+      await dbPut('state', 'appData', appData);
+    }
+  } else {
+    appData = local;
+    // Check if server is newer
+    if (serverDataVersion > localVersion) {
+      pendingServerData = serverData;
+      const banner = document.getElementById('syncBanner');
+      const text = document.getElementById('syncBannerText');
+      if (banner && text) {
+        const diff = countServerDiff(serverData, local);
+        text.textContent = '弼马温更新了任务板 · 服务器版本 v' + serverDataVersion + '（本地 v' + localVersion + '）' + diff;
+        banner.classList.add('show');
+      }
+    }
+  }
+}
+
+let pendingServerData = null;
+
+function countServerDiff(server, local) {
+  let newTasks = 0, changedTasks = 0;
+  const localMap = {};
+  for (const p of (local.phases||[])) for (const t of p.tasks) localMap[t.id] = t;
+  for (const p of (server.phases||[])) {
+    for (const t of p.tasks) {
+      if (!localMap[t.id]) { newTasks++; continue; }
+      const lt = localMap[t.id];
+      if (t.description !== lt.description || t.name !== lt.name) changedTasks++;
+    }
+  }
+  let parts = [];
+  if (newTasks) parts.push(newTasks + ' 项新增');
+  if (changedTasks) parts.push(changedTasks + ' 项更新');
+  return parts.length ? '（' + parts.join('，') + '）' : '';
+}
+
+async function doSync() {
+  if (!pendingServerData) return;
+  const server = pendingServerData;
+  const local = appData;
+
+  // Build local task index
+  const localTasks = {};
+  for (const p of (local.phases||[])) for (const t of p.tasks) localTasks[t.id] = t;
+
+  // Merge: server structure, local content wins for existing tasks
+  appData = JSON.parse(JSON.stringify(server)); // deep clone server as base
+  appData.meta._syncedVersion = serverDataVersion;
+
+  // Restore local edits for existing tasks
+  for (const p of appData.phases) {
+    for (const t of p.tasks) {
+      const lt = localTasks[t.id];
+      if (lt) {
+        // Keep user's edits: description, notes, status, tags
+        t.description = lt.description;
+        t.notes = lt.notes;
+        t.status = lt.status;
+        t.tags = lt.tags || [];
+      }
+    }
+    // Also merge any tasks that exist only in local (user-created)
+    const localPhase = (local.phases||[]).find(lp => lp.id === p.id);
+    if (localPhase) {
+      for (const lt of localPhase.tasks) {
+        if (!p.tasks.find(t => t.id === lt.id)) {
+          p.tasks.push(JSON.parse(JSON.stringify(lt)));
+        }
+      }
+    }
+  }
+
+  pendingServerData = null;
   if (db) await dbPut('state', 'appData', appData);
+  const banner = document.getElementById('syncBanner');
+  if (banner) banner.classList.remove('show');
+  render();
+  // Brief flash to confirm
+  const status = document.getElementById('syncStatus');
+  if (status) { status.textContent = '已同步 v' + serverDataVersion; status.className = 'sync-status ok'; }
+}
+
+function dismissSync() {
+  pendingServerData = null;
+  const banner = document.getElementById('syncBanner');
+  if (banner) banner.classList.remove('show');
 }
 
 async function saveData() {
@@ -480,6 +603,12 @@ function render() {
   html += '<div class="toolbar">';
   html += '<div><span class="sync-status" id="syncStatus"></span></div>';
   html += '<button class="sync-btn" onclick="syncFromGitHub()">GitHub Sync</button>';
+  html += '</div>';
+
+  html += '<div class="sync-banner" id="syncBanner">';
+  html += '<span class="sync-banner-text" id="syncBannerText">弼马温更新了任务板数据</span>';
+  html += '<button class="sync-banner-btn" onclick="doSync()">同步更新</button>';
+  html += '<button class="sync-banner-dismiss" onclick="dismissSync()">忽略</button>';
   html += '</div>';
 
   html += '<div class="nav-strip">';
