@@ -960,7 +960,7 @@ async function syncFromGitHub() {
   if (!token) { openTokenModal(); return; }
 
   const statusEl = document.getElementById('syncStatus');
-  if (statusEl) { statusEl.textContent = '同步中...'; statusEl.className = 'sync-status'; }
+  if (statusEl) { statusEl.textContent = '拉取中...'; statusEl.className = 'sync-status'; }
 
   try {
     const resp = await fetch('https://api.github.com/repos/' + REPO + '/contents/' + DATA_PATH + '?ref=' + BRANCH, {
@@ -971,14 +971,21 @@ async function syncFromGitHub() {
     const remote = await resp.json();
     const remoteContent = JSON.parse(atob(remote.content));
     const remoteSha = remote.sha;
+    const remoteVersion = remoteContent.meta?.version || 0;
 
+    // Step 1: smart merge remote into local (preserves user edits)
+    serverDataVersion = remoteVersion;
+    pendingServerData = remoteContent;
+    await doSync();
+
+    // Step 2: push the merged result back to GitHub
+    if (statusEl) statusEl.textContent = '推送中...';
     const localStr = JSON.stringify(appData, null, 2);
-
     const putResp = await fetch('https://api.github.com/repos/' + REPO + '/contents/' + DATA_PATH, {
       method: 'PUT',
       headers: { 'Authorization': 'token ' + token, 'Accept': 'application/vnd.github.v3+json' },
       body: JSON.stringify({
-        message: 'sync: ' + new Date().toISOString(),
+        message: 'sync: 合并服务器 v' + remoteVersion + ' + 本地编辑',
         content: btoa(unescape(encodeURIComponent(localStr))),
         sha: remoteSha,
         branch: BRANCH
