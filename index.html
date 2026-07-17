@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>碧波烬 · 工作记录板</title>
+<style>
+:root {
+  --bg: #0f1117;
+  --surface: #1a1d27;
+  --surface2: #242836;
+  --border: #2a2e3a;
+  --text: #e1e4ea;
+  --text2: #8b8fa3;
+  --text3: #5a5e6e;
+  --accent: #f0a050;
+  --accent2: #d4883c;
+  --red: #d94a4a;
+  --green: #4ecb71;
+  --blue: #5b9bd5;
+  --purple: #a371f7;
+  --radius: 10px;
+  --shadow: 0 2px 12px rgba(0,0,0,.25);
+  --font: -apple-system, "Microsoft YaHei", "PingFang SC", sans-serif;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:var(--font); background:var(--bg); color:var(--text); min-height:100vh; line-height:1.6; }
+
+/* Header */
+.header { background:var(--surface); border-bottom:1px solid var(--border); padding:0 24px; height:56px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:100; }
+.header-left { display:flex; align-items:center; gap:12px; }
+.header-left h1 { font-size:17px; font-weight:700; color:var(--accent); }
+.header-left .subtitle { font-size:12px; color:var(--text3); }
+.header-right { display:flex; align-items:center; gap:10px; }
+.sync-status { font-size:12px; padding:4px 10px; border-radius:20px; font-weight:500; }
+.sync-status.online { background:#1b3a1b; color:var(--green); }
+.sync-status.offline { background:#3a1b1b; color:var(--red); }
+.sync-status.syncing { background:#3a301b; color:var(--accent); }
+.btn { padding:7px 16px; border:1px solid var(--border); border-radius:6px; background:var(--surface2); color:var(--text); cursor:pointer; font-size:13px; font-family:inherit; transition:all .15s; display:inline-flex; align-items:center; gap:6px; }
+.btn:hover { border-color:var(--accent); color:var(--accent); }
+.btn-primary { background:var(--accent); color:#0f1117; border-color:var(--accent); font-weight:600; }
+.btn-primary:hover { background:var(--accent2); border-color:var(--accent2); color:#0f1117; }
+.btn-sm { padding:5px 10px; font-size:12px; }
+.btn-icon { padding:6px; border:none; background:transparent; color:var(--text2); cursor:pointer; border-radius:6px; font-size:16px; }
+.btn-icon:hover { background:var(--surface2); color:var(--text); }
+
+/* Tabs */
+.tabs { display:flex; gap:0; border-bottom:1px solid var(--border); background:var(--surface); padding:0 24px; }
+.tab { padding:12px 20px; font-size:14px; color:var(--text2); cursor:pointer; border-bottom:2px solid transparent; transition:all .15s; font-family:inherit; background:none; border-top:none; border-left:none; border-right:none; }
+.tab:hover { color:var(--text); }
+.tab.active { color:var(--accent); border-bottom-color:var(--accent); }
+.tab .count { font-size:11px; background:var(--surface2); padding:1px 7px; border-radius:10px; margin-left:6px; }
+
+/* Main */
+.main { max-width:1400px; margin:0 auto; padding:24px; }
+
+/* Kanban */
+.kanban { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; }
+.kanban-col { background:var(--surface); border-radius:var(--radius); padding:16px; border:1px solid var(--border); }
+.kanban-col h3 { font-size:13px; text-transform:uppercase; letter-spacing:.5px; margin-bottom:14px; display:flex; align-items:center; gap:8px; }
+.kanban-col h3 .dot { width:8px; height:8px; border-radius:50%; }
+.col-pending h3 .dot { background:var(--text3); }
+.col-progress h3 .dot { background:var(--accent); }
+.col-done h3 .dot { background:var(--green); }
+.col-pending h3 { color:var(--text3); }
+.col-progress h3 { color:var(--accent); }
+.col-done h3 { color:var(--green); }
+
+.phase-card { background:var(--surface2); border-radius:8px; padding:14px; margin-bottom:10px; cursor:pointer; border:1px solid transparent; transition:all .15s; position:relative; }
+.phase-card:hover { border-color:var(--accent); transform:translateY(-1px); box-shadow:var(--shadow); }
+.phase-card .phase-id { font-size:11px; color:var(--accent); font-weight:600; margin-bottom:4px; }
+.phase-card .phase-name { font-size:15px; font-weight:600; margin-bottom:6px; }
+.phase-card .phase-meta { font-size:11px; color:var(--text3); display:flex; gap:12px; }
+.phase-card .phase-meta span { display:flex; align-items:center; gap:3px; }
+.phase-card .phase-progress { margin-top:8px; height:3px; background:var(--border); border-radius:2px; overflow:hidden; }
+.phase-card .phase-progress-bar { height:100%; border-radius:2px; transition:width .3s; }
+.card-empty { text-align:center; color:var(--text3); padding:30px 10px; font-size:13px; }
+
+/* Calendar */
+.calendar-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; }
+.calendar-header .month-label { font-size:20px; font-weight:700; }
+.calendar-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:2px; }
+.calendar-cell { aspect-ratio:1; background:var(--surface); border-radius:6px; padding:6px; cursor:pointer; border:1px solid var(--border); font-size:12px; transition:all .15s; position:relative; display:flex; flex-direction:column; }
+.calendar-cell:hover { border-color:var(--accent); }
+.calendar-cell.other-month { opacity:.3; }
+.calendar-cell.today { border-color:var(--accent); background:var(--surface2); }
+.calendar-cell .day-num { font-weight:600; margin-bottom:2px; }
+.calendar-cell .milestones { display:flex; flex-wrap:wrap; gap:2px; margin-top:auto; }
+.calendar-cell .milestone-dot { width:6px; height:6px; border-radius:50%; flex-shrink:0; }
+.calendar-weekday { text-align:center; font-size:11px; color:var(--text3); padding:8px 0; font-weight:600; }
+
+/* Media */
+.media-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:14px; }
+.media-card { background:var(--surface); border-radius:var(--radius); overflow:hidden; border:1px solid var(--border); transition:all .15s; cursor:pointer; }
+.media-card:hover { border-color:var(--accent); transform:translateY(-2px); }
+.media-card img { width:100%; height:160px; object-fit:cover; display:block; }
+.media-card .media-info { padding:10px; }
+.media-card .media-name { font-size:13px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.media-card .media-meta { font-size:11px; color:var(--text3); margin-top:4px; }
+.media-card .media-phase { font-size:10px; color:var(--accent); margin-top:2px; }
+.media-empty { text-align:center; color:var(--text3); padding:60px 20px; grid-column:1/-1; }
+
+/* Modal */
+.modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,.7); z-index:200; display:flex; align-items:center; justify-content:center; padding:20px; }
+.modal { background:var(--surface); border-radius:var(--radius); width:100%; max-width:700px; max-height:85vh; overflow-y:auto; border:1px solid var(--border); box-shadow:0 8px 40px rgba(0,0,0,.5); }
+.modal-header { padding:18px 24px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; background:var(--surface); z-index:10; }
+.modal-header h2 { font-size:18px; display:flex; align-items:center; gap:10px; }
+.modal-header h2 .phase-tag { font-size:11px; padding:3px 8px; border-radius:4px; font-weight:600; }
+.modal-body { padding:24px; }
+.modal-section { margin-bottom:24px; }
+.modal-section h4 { font-size:12px; text-transform:uppercase; letter-spacing:.5px; color:var(--text3); margin-bottom:12px; }
+
+/* Task */
+.task-item { display:flex; align-items:flex-start; gap:10px; padding:10px 12px; background:var(--surface2); border-radius:6px; margin-bottom:6px; border:1px solid var(--border); }
+.task-item.done { opacity:.5; }
+.task-item.done .task-text { text-decoration:line-through; }
+.task-item input[type=checkbox] { margin-top:3px; accent-color:var(--accent); width:16px; height:16px; cursor:pointer; }
+.task-text { flex:1; font-size:14px; }
+.task-del { color:var(--text3); cursor:pointer; font-size:16px; opacity:0; transition:opacity .15s; background:none; border:none; padding:0 4px; }
+.task-item:hover .task-del { opacity:1; }
+.task-del:hover { color:var(--red); }
+.task-add { display:flex; gap:8px; margin-top:8px; }
+.task-add input { flex:1; padding:8px 12px; border:1px solid var(--border); border-radius:6px; background:var(--bg); color:var(--text); font-size:13px; font-family:inherit; }
+.task-add input:focus { outline:none; border-color:var(--accent); }
+
+/* Note */
+.note-item { padding:10px 14px; background:var(--surface2); border-radius:6px; margin-bottom:6px; border-left:3px solid var(--accent); font-size:13px; display:flex; gap:10px; }
+.note-item .note-author { font-size:11px; color:var(--accent); font-weight:600; flex-shrink:0; min-width:60px; }
+.note-item .note-text { flex:1; }
+.note-item .note-time { font-size:10px; color:var(--text3); flex-shrink:0; }
+.note-add { display:flex; gap:8px; margin-top:8px; }
+.note-add input { flex:1; padding:8px 12px; border:1px solid var(--border); border-radius:6px; background:var(--bg); color:var(--text); font-size:13px; font-family:inherit; }
+.note-add select { padding:8px 10px; border:1px solid var(--border); border-radius:6px; background:var(--bg); color:var(--text); font-size:13px; font-family:inherit; }
+.note-add input:focus, .note-add select:focus { outline:none; border-color:var(--accent); }
+
+/* Upload */
+.upload-zone { border:2px dashed var(--border); border-radius:var(--radius); padding:40px; text-align:center; cursor:pointer; transition:all .15s; color:var(--text3); }
+.upload-zone:hover, .upload-zone.drag-over { border-color:var(--accent); color:var(--accent); background:rgba(240,160,80,.05); }
+.upload-zone .upload-icon { font-size:40px; margin-bottom:8px; }
+.upload-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(100px,1fr)); gap:8px; margin-top:12px; }
+.upload-thumb { aspect-ratio:1; border-radius:6px; overflow:hidden; background:var(--surface2); border:1px solid var(--border); position:relative; cursor:pointer; }
+.upload-thumb img { width:100%; height:100%; object-fit:cover; }
+.upload-thumb .upload-remove { position:absolute; top:4px; right:4px; width:22px; height:22px; border-radius:50%; background:rgba(0,0,0,.7); color:var(--red); border:none; cursor:pointer; font-size:14px; display:none; align-items:center; justify-content:center; }
+.upload-thumb:hover .upload-remove { display:flex; }
+
+/* Settings panel */
+.settings-panel { position:fixed; right:0; top:56px; bottom:0; width:360px; background:var(--surface); border-left:1px solid var(--border); z-index:150; transform:translateX(100%); transition:transform .2s; padding:24px; overflow-y:auto; }
+.settings-panel.open { transform:translateX(0); }
+.settings-panel h3 { font-size:16px; margin-bottom:20px; color:var(--accent); }
+.settings-panel label { display:block; font-size:12px; color:var(--text2); margin-bottom:4px; }
+.settings-panel input { width:100%; padding:8px 12px; border:1px solid var(--border); border-radius:6px; background:var(--bg); color:var(--text); font-size:13px; font-family:monospace; margin-bottom:14px; }
+.settings-panel input:focus { outline:none; border-color:var(--accent); }
+.settings-panel .hint { font-size:11px; color:var(--text3); margin-top:-10px; margin-bottom:14px; line-height:1.5; }
+.settings-panel .hint a { color:var(--blue); }
+
+/* Toast */
+.toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%); padding:10px 20px; border-radius:8px; font-size:13px; z-index:300; animation:toastIn .3s; }
+.toast.success { background:#1b3a1b; color:var(--green); border:1px solid var(--green); }
+.toast.error { background:#3a1b1b; color:var(--red); border:1px solid var(--red); }
+.toast.info { background:var(--surface2); color:var(--text); border:1px solid var(--border); }
+@keyframes toastIn { from {opacity:0;transform:translateX(-50%) translateY(10px);} to {opacity:1;transform:translateX(-50%) translateY(0);} }
+
+@media(max-width:768px) {
+  .kanban { grid-template-columns:1fr; }
+  .modal { max-width:100%; max-height:100vh; border-radius:0; }
+  .settings-panel { width:100%; }
+  .header h1 { font-size:15px; }
+  .tab { padding:10px 14px; font-size:13px; }
+  .calendar-cell { font-size:10px; padding:4px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div class="header-left">
+    <h1>🌊 碧波烬</h1>
+    <span class="subtitle">四镜头切片 · 工作记录板</span>
+  </div>
+  <div class="header-right">
+    <span class="sync-status offline" id="syncStatus">● 未连接</span>
+    <button class="btn btn-sm" onclick="syncNow()" id="syncBtn">🔄 同步</button>
+    <button class="btn btn-sm" onclick="toggleSettings()">⚙️</button>
+  </div>
+</div>
+
+<!-- Tabs -->
+<div class="tabs">
+  <button class="tab active" onclick="switchView('kanban')">📋 看板 <span class="count" id="kanbanCount"></span></button>
+  <button class="tab" onclick="switchView('calendar')">📅 日历</button>
+  <button class="tab" onclick="switchView('media')">🖼️ 素材库 <span class="count" id="mediaCount">0</span></button>
+</div>
+
+<!-- Main -->
+<div class="main" id="mainContent"></div>
+
+<!-- Settings Panel -->
+<div class="settings-panel" id="settingsPanel">
+  <h3>⚙️ GitHub 同步设置</h3>
+  <label>GitHub 用户名</label>
+  <input type="text" id="ghOwner" placeholder="你的 GitHub 用户名" onchange="saveSettings()">
+  <label>仓库名</label>
+  <input type="text" id="ghRepo" placeholder="xiyou-workboard" onchange="saveSettings()">
+  <label>Personal Access Token</label>
+  <input type="password" id="ghToken" placeholder="ghp_xxxxxxxxxxxx" onchange="saveSettings()">
+  <div class="hint">
+    1. 去 <a href="https://github.com/settings/tokens/new" target="_blank">GitHub Token 设置</a> 创建 Classic Token<br>
+    2. 勾选 <b>public_repo</b> 权限<br>
+    3. 复制 token 粘贴到上方<br>
+    4. Token 仅存在浏览器本地，不会上传到任何服务器
+  </div>
+  <button class="btn btn-primary" onclick="testConnection()" style="width:100%">🔗 测试连接</button>
+  <button class="btn" onclick="manualExport()" style="width:100%;margin-top:8px">📥 导出本地备份</button>
+  <button class="btn" onclick="manualImport()" style="width:100%;margin-top:8px">📤 导入本地备份</button>
+  <button class="btn" onclick="toggleSettings()" style="width:100%;margin-top:16px">关闭</button>
+</div>
+
+<!-- Hidden file inputs -->
+<input type="file" id="filePicker" style="display:none" multiple accept="image/*,video/*" onchange="handleFilePick(event)">
+<input type="file" id="importPicker" style="display:none" accept=".json" onchange="handleImport(event)">
+
+<script>
+// ─── Data Layer ────────────────────────────────────
+let data = { meta: { version:'2.0', project:'碧波烬 · 四镜头切片', updated:'' }, phases: [] };
+let currentView = 'kanban';
+let currentPhase = null;
+let calYear, calMonth;
+
+const phaseDefaults = [
+  { id:'01', name:'情绪定义', folder:'01_情绪定义', status:'completed', color:'#f0a050', milestone:'2026-07-17', tasks:[], notes:[], uploads:[] },
+  { id:'02', name:'参考素材', folder:'02_参考素材', status:'in_progress', color:'#5b9bd5', milestone:'2026-07-20', tasks:[], notes:[], uploads:[] },
+  { id:'03', name:'镜头设计', folder:'03_镜头设计', status:'pending', color:'#a371f7', milestone:'2026-07-27', tasks:[], notes:[], uploads:[] },
+  { id:'04', name:'AI 原画', folder:'04_AI原画', status:'pending', color:'#d94a4a', milestone:'2026-08-05', tasks:[], notes:[], uploads:[] },
+  { id:'05', name:'手绘精修', folder:'05_手绘精修', status:'pending', color:'#4ecb71', milestone:'2026-08-10', tasks:[], notes:[], uploads:[] },
+  { id:'06', name:'AI 视频', folder:'06_AI视频', status:'pending', color:'#5b9bd5', milestone:'2026-08-17', tasks:[], notes:[], uploads:[] },
+  { id:'07', name:'合成输出', folder:'07_合成输出', status:'pending', color:'#a371f7', milestone:'2026-08-22', tasks:[], notes:[], uploads:[] },
+  { id:'08', name:'UE 还原', folder:'08_UE还原', status:'pending', color:'#d94a4a', milestone:'2026-08-30', tasks:[], notes:[], uploads:[] }
+];
+
+function initData() {
+  if (data.phases.length === 0) {
+    data.phases = phaseDefaults.map(p => JSON.parse(JSON.stringify(p)));
+  }
+  // Ensure all 8 phases exist
+  phaseDefaults.forEach(def => {
+    if (!data.phases.find(p => p.id === def.id)) {
+      data.phases.push(JSON.parse(JSON.stringify(def)));
+    }
+  });
+  // Sort by id
+  data.phases.sort((a,b) => a.id.localeCompare(b.id));
+}
+
+function getPhase(id) { return data.phases.find(p => p.id === id); }
+function todoCount(p) { return p.tasks.filter(t => !t.done).length; }
+function doneCount(p) { return p.tasks.filter(t => t.done).length; }
+function totalCount(p) { return p.tasks.length; }
+function progressPct(p) { return totalCount(p) === 0 ? 0 : Math.round(doneCount(p)/totalCount(p)*100); }
+function allUploads() { return data.phases.flatMap(p => (p.uploads||[]).map(u => ({...u, phaseId:p.id, phaseName:p.name}))); }
+
+// ─── GitHub Sync ──────────────────────────────────
+function ghConfig() {
+  return {
+    owner: localStorage.getItem('wb_gh_owner') || '',
+    repo: localStorage.getItem('wb_gh_repo') || 'xiyou-workboard',
+    token: localStorage.getItem('wb_gh_token') || ''
+  };
+}
+
+function saveSettings() {
+  localStorage.setItem('wb_gh_owner', document.getElementById('ghOwner').value);
+  localStorage.setItem('wb_gh_repo', document.getElementById('ghRepo').value);
+  localStorage.setItem('wb_gh_token', document.getElementById('ghToken').value);
+}
+
+function loadSettings() {
+  const c = ghConfig();
+  document.getElementById('ghOwner').value = c.owner;
+  document.getElementById('ghRepo').value = c.repo;
+  document.getElementById('ghToken').value = c.token;
+}
+
+function setSyncStatus(status) {
+  const el = document.getElementById('syncStatus');
+  el.className = 'sync-status ' + status;
+  el.textContent = {online:'● 已连接',offline:'● 未连接',syncing:'◉ 同步中...'}[status];
+}
+
+async function ghAPI(path, method='GET', body=null) {
+  const c = ghConfig();
+  if (!c.token || !c.owner || !c.repo) throw new Error('请先配置 GitHub 连接信息');
+  const opts = {
+    method,
+    headers: { Authorization: 'Bearer ' + c.token, Accept: 'application/vnd.github.v3+json' }
+  };
+  if (body) {
+    opts.headers['Content-Type'] = 'application/json';
+    opts.body = JSON.stringify(body);
+  }
+  const url = path.startsWith('http') ? path : `https://api.github.com/repos/${c.owner}/${c.repo}/contents/${path}`;
+  const res = await fetch(url, opts);
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.message || `GitHub API error: ${res.status}`);
+  }
+  return res.json();
+}
+
+async function syncNow() {
+  setSyncStatus('syncing');
+  try {
+    // Pull
+    let sha = null;
+    try {
+      const remote = await ghAPI('data.json');
+      data = JSON.parse(atob(remote.content));
+      sha = remote.sha;
+      setSyncStatus('online');
+    } catch(e) {
+      // data.json doesn't exist yet, will create
+    }
+    initData();
+    // Push
+    data.meta.updated = new Date().toISOString();
+    const putBody = { message: 'sync: 工作板数据更新', content: btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2)))) };
+    if (sha) putBody.sha = sha;
+    await ghAPI('data.json', 'PUT', putBody);
+    setSyncStatus('online');
+    toast('同步成功 ✓', 'success');
+    render();
+  } catch(e) {
+    setSyncStatus('offline');
+    toast('同步失败: ' + e.message, 'error');
+  }
+}
+
+// Push local data without pulling first (used after file uploads)
+async function pushData() {
+  const c = ghConfig();
+  if (!c.token || !c.owner || !c.repo) return;
+  setSyncStatus('syncing');
+  try {
+    let sha = null;
+    try {
+      const remote = await ghAPI('data.json');
+      sha = remote.sha;
+    } catch(e) { /* first push */ }
+    data.meta.updated = new Date().toISOString();
+    const putBody = { message: 'upload: 素材更新', content: btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2)))) };
+    if (sha) putBody.sha = sha;
+    await ghAPI('data.json', 'PUT', putBody);
+    setSyncStatus('online');
+    toast('素材已同步 ✓', 'success');
+  } catch(e) {
+    setSyncStatus('offline');
+    toast('同步失败: ' + e.message, 'error');
+  }
+}
+
+async function testConnection() {
+  saveSettings();
+  setSyncStatus('syncing');
+  try {
+    const c = ghConfig();
+    const res = await fetch(`https://api.github.com/repos/${c.owner}/${c.repo}`, {
+      headers: { Authorization: 'Bearer ' + c.token }
+    });
+    if (res.ok) {
+      setSyncStatus('online');
+      toast('连接成功！仓库 ' + c.owner + '/' + c.repo + ' 已找到', 'success');
+    } else if (res.status === 404) {
+      setSyncStatus('offline');
+      toast('仓库不存在，请在 GitHub 上先创建 ' + c.owner + '/' + c.repo + '（公开仓库）', 'error');
+    } else {
+      setSyncStatus('offline');
+      toast('连接失败: ' + res.status, 'error');
+    }
+  } catch(e) {
+    setSyncStatus('offline');
+    toast('连接失败: ' + e.message, 'error');
+  }
+}
+
+async function uploadFileToGitHub(file, phaseId) {
+  const c = ghConfig();
+  if (!c.token) throw new Error('请先配置 GitHub 连接');
+  const filename = phaseId + '_' + Date.now() + '_' + file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+  const path = 'uploads/' + filename;
+  const reader = new FileReader();
+  return new Promise((resolve, reject) => {
+    reader.onload = async () => {
+      const base64 = reader.result.split(',')[1];
+      try {
+        await ghAPI(path, 'PUT', {
+          message: 'upload: ' + file.name,
+          content: base64
+        });
+        resolve({
+          id: 'u_' + Date.now(),
+          filename: file.name,
+          type: file.type.startsWith('video') ? 'video' : 'image',
+          size: file.size,
+          path: path,
+          uploadedAt: new Date().toISOString()
+        });
+      } catch(e) { reject(e); }
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+// ─── Local Save ───────────────────────────────────
+function localSave() {
+  initData();
+  data.meta.updated = new Date().toISOString();
+  localStorage.setItem('wb_data', JSON.stringify(data));
+}
+
+function localLoad() {
+  const saved = localStorage.getItem('wb_data');
+  if (saved) {
+    try { data = JSON.parse(saved); } catch(e) {}
+  }
+  initData();
+}
+
+// ─── Render ──────────────────────────────────────
+function render() {
+  switch(currentView) {
+    case 'kanban': renderKanban(); break;
+    case 'calendar': renderCalendar(); break;
+    case 'media': renderMedia(); break;
+  }
+  document.getElementById('kanbanCount').textContent = '';
+  document.getElementById('mediaCount').textContent = allUploads().length || '';
+}
+
+function renderKanban() {
+  const cols = { pending:[], in_progress:[], completed:[] };
+  data.phases.forEach(p => { if (cols[p.status]) cols[p.status].push(p); });
+
+  document.getElementById('mainContent').innerHTML = `
+    <div class="kanban">
+      <div class="kanban-col col-pending">
+        <h3><span class="dot"></span>待开始 ${cols.pending.length}</h3>
+        ${cols.pending.map(p => cardHTML(p)).join('') || '<div class="card-empty">没有待开始的阶段</div>'}
+      </div>
+      <div class="kanban-col col-progress">
+        <h3><span class="dot"></span>进行中 ${cols.in_progress.length}</h3>
+        ${cols.in_progress.map(p => cardHTML(p)).join('') || '<div class="card-empty">没有进行中的阶段</div>'}
+      </div>
+      <div class="kanban-col col-done">
+        <h3><span class="dot"></span>已完成 ${cols.completed.length}</h3>
+        ${cols.completed.map(p => cardHTML(p)).join('') || '<div class="card-empty">还没有完成的阶段</div>'}
+      </div>
+    </div>`;
+}
+
+function cardHTML(p) {
+  const pct = progressPct(p);
+  const barColor = pct === 100 ? 'var(--green)' : p.status === 'completed' ? 'var(--green)' : 'var(--accent)';
+  return `
+    <div class="phase-card" onclick="openPhase('${p.id}')">
+      <div class="phase-id">${p.id} · ${p.folder}</div>
+      <div class="phase-name">${p.name}</div>
+      <div class="phase-meta">
+        <span>📋 ${doneCount(p)}/${totalCount(p)} 任务</span>
+        ${p.uploads ? `<span>🖼️ ${p.uploads.length} 素材</span>` : ''}
+        ${p.milestone ? `<span>📅 ${p.milestone}</span>` : ''}
+      </div>
+      ${totalCount(p) > 0 ? `<div class="phase-progress"><div class="phase-progress-bar" style="width:${pct}%;background:${barColor}"></div></div>` : ''}
+    </div>`;
+}
+
+function renderCalendar() {
+  if (!calYear) { const now = new Date(); calYear = now.getFullYear(); calMonth = now.getMonth(); }
+  const firstDay = new Date(calYear, calMonth, 1).getDay(); // 0=Sun
+  const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+  const today = new Date();
+
+  // Build milestone map
+  const milestoneMap = {};
+  data.phases.forEach(p => {
+    if (p.milestone) {
+      const d = new Date(p.milestone + 'T00:00:00');
+      const key = d.getFullYear() + '-' + d.getMonth() + '-' + d.getDate();
+      if (!milestoneMap[key]) milestoneMap[key] = [];
+      milestoneMap[key].push(p);
+    }
+  });
+
+  const months = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
+  const weekdays = ['日','一','二','三','四','五','六'];
+
+  let html = `<div class="calendar-header">
+    <button class="btn btn-sm" onclick="calYear--;renderCalendar()">◀ 年</button>
+    <button class="btn btn-sm" onclick="calMonth--;if(calMonth<0){calMonth=11;calYear--}renderCalendar()">◀ 月</button>
+    <span class="month-label">${calYear}年 ${months[calMonth]}</span>
+    <button class="btn btn-sm" onclick="calMonth++;if(calMonth>11){calMonth=0;calYear++}renderCalendar()">月 ▶</button>
+    <button class="btn btn-sm" onclick="calYear++;renderCalendar()">年 ▶</button>
+  </div>`;
+
+  html += '<div class="calendar-grid">';
+  weekdays.forEach(w => { html += `<div class="calendar-weekday">${w}</div>`; });
+
+  // Fill leading blanks from previous month
+  for (let i = 0; i < firstDay; i++) {
+    html += '<div class="calendar-cell other-month"></div>';
+  }
+  // Days
+  for (let d = 1; d <= daysInMonth; d++) {
+    const date = new Date(calYear, calMonth, d);
+    const key = calYear + '-' + calMonth + '-' + d;
+    const isToday = date.toDateString() === today.toDateString();
+    const milestones = milestoneMap[key] || [];
+
+    html += `<div class="calendar-cell${isToday ? ' today' : ''}"${milestones.length ? ` onclick="scrollToPhases(${JSON.stringify(milestones.map(m=>m.id))})"` : ''}>
+      <div class="day-num">${d}</div>`;
+    if (milestones.length) {
+      html += '<div class="milestones">';
+      milestones.forEach(m => {
+        html += `<span class="milestone-dot" style="background:${m.color}" title="${m.name}"></span>`;
+      });
+      html += '</div>';
+    }
+    html += '</div>';
+  }
+  html += '</div>';
+
+  document.getElementById('mainContent').innerHTML = html;
+}
+
+function scrollToPhases(ids) {
+  switchView('kanban');
+  setTimeout(() => {
+    ids.forEach(id => {
+      const cards = document.querySelectorAll('.phase-card');
+      cards.forEach(c => {
+        if (c.querySelector('.phase-id')?.textContent?.startsWith(id)) {
+          c.style.borderColor = 'var(--accent)';
+          c.scrollIntoView({behavior:'smooth', block:'center'});
+        }
+      });
+    });
+  }, 100);
+}
+
+function renderMedia() {
+  const uploads = allUploads();
+  if (uploads.length === 0) {
+    document.getElementById('mainContent').innerHTML = '<div class="media-empty" style="grid-column:1/-1">还没有上传素材，打开阶段详情拖放图片/视频即可</div>';
+    return;
+  }
+  document.getElementById('mainContent').innerHTML = `<div class="media-grid">${uploads.map(u => mediaCardHTML(u)).join('')}</div>`;
+}
+
+function mediaCardHTML(u) {
+  const c = ghConfig();
+  const rawUrl = c.owner && c.repo ? `https://raw.githubusercontent.com/${c.owner}/${c.repo}/main/${u.path}` : '';
+  const isVideo = u.type === 'video';
+  return `
+    <div class="media-card" onclick="openPhase('${u.phaseId}')">
+      ${isVideo
+        ? `<div style="height:160px;display:flex;align-items:center;justify-content:center;background:var(--surface2);font-size:40px">🎬</div>`
+        : (rawUrl ? `<img src="${rawUrl}" alt="${u.filename}" onerror="this.parentElement.innerHTML='<div style=\\'height:160px;display:flex;align-items:center;justify-content:center;background:var(--surface2);font-size:40px\\'>🖼️</div>'">` : `<div style="height:160px;display:flex;align-items:center;justify-content:center;background:var(--surface2);font-size:40px">🖼️</div>`)
+      }
+      <div class="media-info">
+        <div class="media-name" title="${u.filename}">${u.filename}</div>
+        <div class="media-meta">${(u.size/1024).toFixed(1)} KB · ${new Date(u.uploadedAt).toLocaleDateString('zh-CN')}</div>
+        <div class="media-phase">${u.phaseId} · ${u.phaseName}</div>
+      </div>
+    </div>`;
+}
+
+// ─── Phase Detail Modal ──────────────────────────
+function openPhase(id) {
+  currentPhase = id;
+  const p = getPhase(id);
+  if (!p) return;
+
+  const pct = progressPct(p);
+
+  let html = `<div class="modal-overlay" onclick="if(event.target===this)closePhase()">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>
+          <span class="phase-tag" style="background:${p.color}22;color:${p.color}">${p.id}</span>
+          ${p.name}
+        </h2>
+        <button class="btn-icon" onclick="closePhase()" style="font-size:20px">✕</button>
+      </div>
+      <div class="modal-body">
+
+        <!-- Status -->
+        <div class="modal-section">
+          <div style="display:flex;gap:8px;align-items:center">
+            <span style="font-size:12px;color:var(--text3)">状态：</span>
+            <select onchange="changeStatus('${p.id}', this.value)" style="padding:6px 10px;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text);font-size:13px;font-family:inherit">
+              <option value="pending" ${p.status==='pending'?'selected':''}>⬜ 待开始</option>
+              <option value="in_progress" ${p.status==='in_progress'?'selected':''}>🔄 进行中</option>
+              <option value="completed" ${p.status==='completed'?'selected':''}>✅ 已完成</option>
+            </select>
+            <label style="font-size:12px;color:var(--text3);margin-left:12px">里程碑：</label>
+            <input type="date" value="${p.milestone||''}" onchange="setMilestone('${p.id}', this.value)" style="padding:6px 10px;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text);font-size:13px;font-family:inherit">
+          </div>
+          ${totalCount(p) > 0 ? `<div style="margin-top:10px;display:flex;align-items:center;gap:8px">
+            <div style="flex:1;height:4px;background:var(--border);border-radius:2px;overflow:hidden">
+              <div style="height:100%;width:${pct}%;background:${pct===100?'var(--green)':'var(--accent)'};border-radius:2px;transition:width.3s"></div>
+            </div>
+            <span style="font-size:12px;color:var(--text3)">${doneCount(p)}/${totalCount(p)} · ${pct}%</span>
+          </div>` : ''}
+        </div>
+
+        <!-- Tasks -->
+        <div class="modal-section">
+          <h4>✅ 任务清单</h4>
+          ${(p.tasks||[]).map(t => `
+            <div class="task-item${t.done?' done':''}">
+              <input type="checkbox" ${t.done?'checked':''} onchange="toggleTask('${p.id}','${t.id}',this.checked)">
+              <span class="task-text">${t.text}</span>
+              <button class="task-del" onclick="deleteTask('${p.id}','${t.id}')" title="删除">×</button>
+            </div>`).join('') || '<div style="color:var(--text3);font-size:13px;padding:8px 0">暂无任务</div>'}
+          <div class="task-add">
+            <input type="text" id="taskInput_${p.id}" placeholder="添加新任务..." onkeydown="if(event.key==='Enter')addTask('${p.id}')">
+            <button class="btn btn-sm btn-primary" onclick="addTask('${p.id}')">+ 添加</button>
+          </div>
+        </div>
+
+        <!-- Notes -->
+        <div class="modal-section">
+          <h4>📝 备注</h4>
+          ${(p.notes||[]).map(n => `
+            <div class="note-item">
+              <span class="note-author">${n.author}</span>
+              <span class="note-text">${n.text}</span>
+              <span class="note-time">${new Date(n.createdAt).toLocaleDateString('zh-CN')}</span>
+            </div>`).join('') || '<div style="color:var(--text3);font-size:13px;padding:8px 0">暂无备注</div>'}
+          <div class="note-add">
+            <select id="noteAuthor_${p.id}">
+              <option value="活阎王">活阎王</option>
+              <option value="弼马温">弼马温</option>
+            </select>
+            <input type="text" id="noteInput_${p.id}" placeholder="添加备注..." onkeydown="if(event.key==='Enter')addNote('${p.id}')">
+            <button class="btn btn-sm btn-primary" onclick="addNote('${p.id}')">+ 添加</button>
+          </div>
+        </div>
+
+        <!-- Uploads -->
+        <div class="modal-section">
+          <h4>🖼️ 素材 (${(p.uploads||[]).length})</h4>
+          <div class="upload-zone" id="uploadZone_${p.id}"
+            onclick="document.getElementById('filePicker').setAttribute('data-phase','${p.id}');document.getElementById('filePicker').click()"
+            ondragover="event.preventDefault();this.classList.add('drag-over')"
+            ondragleave="this.classList.remove('drag-over')"
+            ondrop="event.preventDefault();this.classList.remove('drag-over');handleDrop(event,'${p.id}')">
+            <div class="upload-icon">📁</div>
+            <div>拖放图片/视频到这里，或点击选择文件</div>
+          </div>
+          ${(p.uploads||[]).length > 0 ? `<div class="upload-grid">${(p.uploads||[]).map(u => {
+            const rawUrl = ghConfig().owner ? `https://raw.githubusercontent.com/${ghConfig().owner}/${ghConfig().repo}/main/${u.path}` : '';
+            return `<div class="upload-thumb" onclick="window.open('${rawUrl}','_blank')">
+              ${u.type==='video' ? '<div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:30px">🎬</div>' : `<img src="${rawUrl}" onerror="this.parentElement.innerHTML='<div style=\\'display:flex;align-items:center;justify-content:center;height:100%;font-size:30px\\'>🖼️</div>'">`}
+              <button class="upload-remove" onclick="event.stopPropagation();removeUpload('${p.id}','${u.id}')">×</button>
+            </div>`;
+          }).join('')}</div>` : ''}
+        </div>
+
+      </div>
+    </div>
+  </div>`;
+
+  // Create a temporary modal wrapper that doesn't replace the whole body
+  const existing = document.getElementById('phaseModal');
+  if (existing) existing.remove();
+  const div = document.createElement('div');
+  div.id = 'phaseModal';
+  div.innerHTML = html;
+  document.body.appendChild(div);
+}
+
+function closePhase() {
+  const el = document.getElementById('phaseModal');
+  if (el) el.remove();
+  currentPhase = null;
+  localSave();
+  render();
+}
+
+// ─── Actions ──────────────────────────────────────
+function changeStatus(id, status) {
+  const p = getPhase(id);
+  if (p) p.status = status;
+  localSave();
+  // Re-render modal
+  openPhase(id);
+}
+
+function setMilestone(id, date) {
+  const p = getPhase(id);
+  if (p) p.milestone = date;
+  localSave();
+}
+
+function toggleTask(pid, tid, done) {
+  const p = getPhase(pid);
+  if (!p) return;
+  const t = p.tasks.find(t => t.id === tid);
+  if (t) t.done = done;
+  localSave();
+  openPhase(pid);
+}
+
+function addTask(pid) {
+  const inp = document.getElementById('taskInput_' + pid);
+  if (!inp || !inp.value.trim()) return;
+  const p = getPhase(pid);
+  if (!p) return;
+  if (!p.tasks) p.tasks = [];
+  p.tasks.push({ id: 't' + Date.now(), text: inp.value.trim(), done: false, createdAt: new Date().toISOString() });
+  inp.value = '';
+  localSave();
+  openPhase(pid);
+}
+
+function deleteTask(pid, tid) {
+  const p = getPhase(pid);
+  if (!p) return;
+  p.tasks = p.tasks.filter(t => t.id !== tid);
+  localSave();
+  openPhase(pid);
+}
+
+function addNote(pid) {
+  const inp = document.getElementById('noteInput_' + pid);
+  const authorSel = document.getElementById('noteAuthor_' + pid);
+  if (!inp || !inp.value.trim()) return;
+  const p = getPhase(pid);
+  if (!p) return;
+  if (!p.notes) p.notes = [];
+  p.notes.push({ id: 'n' + Date.now(), text: inp.value.trim(), author: authorSel?.value || '活阎王', createdAt: new Date().toISOString() });
+  inp.value = '';
+  localSave();
+  openPhase(pid);
+}
+
+function handleDrop(e, pid) {
+  const files = Array.from(e.dataTransfer.files);
+  uploadFiles(files, pid);
+}
+
+function handleFilePick(e) {
+  const pid = document.getElementById('filePicker').getAttribute('data-phase');
+  const files = Array.from(e.target.files);
+  uploadFiles(files, pid);
+  e.target.value = '';
+}
+
+async function uploadFiles(files, pid) {
+  const c = ghConfig();
+  const p = getPhase(pid);
+  if (!p) return;
+  if (!p.uploads) p.uploads = [];
+
+  let uploaded = 0;
+  for (const file of files) {
+    try {
+      if (c.token && c.owner && c.repo) {
+        // Upload file to GitHub uploads/ directory
+        const upload = await uploadFileToGitHub(file, pid);
+        p.uploads.push(upload);
+        uploaded++;
+      } else {
+        // Local only - store as base64
+        const reader = new FileReader();
+        await new Promise((resolve) => {
+          reader.onload = () => {
+            p.uploads.push({
+              id: 'u_' + Date.now() + '_' + Math.random().toString(36).slice(2,6),
+              filename: file.name,
+              type: file.type.startsWith('video') ? 'video' : 'image',
+              size: file.size,
+              dataUrl: reader.result,
+              uploadedAt: new Date().toISOString()
+            });
+            resolve();
+          };
+          reader.readAsDataURL(file);
+        });
+        uploaded++;
+      }
+      toast(`${file.name} 上传成功`, 'success');
+    } catch(e) {
+      toast(`上传失败: ${e.message}`, 'error');
+    }
+  }
+  localSave();
+
+  // Push data.json once after all files are uploaded
+  if (uploaded > 0 && c.token && c.owner && c.repo) {
+    await pushData();
+  }
+
+  openPhase(pid);
+}
+
+function removeUpload(pid, uid) {
+  const p = getPhase(pid);
+  if (p && p.uploads) {
+    p.uploads = p.uploads.filter(u => u.id !== uid);
+    localSave();
+    openPhase(pid);
+  }
+}
+
+// ─── Navigation ──────────────────────────────────
+function switchView(view) {
+  currentView = view;
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => {
+    if (t.textContent.includes(view === 'kanban' ? '看板' : view === 'calendar' ? '日历' : '素材库')) t.classList.add('active');
+  });
+  closePhase();
+  render();
+}
+
+function toggleSettings() {
+  document.getElementById('settingsPanel').classList.toggle('open');
+}
+
+// ─── Export / Import ──────────────────────────────
+function manualExport() {
+  initData();
+  const json = JSON.stringify(data, null, 2);
+  const blob = new Blob([json], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = '碧波烬_工作板_备份_' + new Date().toISOString().slice(0,10) + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('导出成功', 'success');
+}
+
+function manualImport() {
+  document.getElementById('importPicker').click();
+}
+
+function handleImport(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      data = JSON.parse(reader.result);
+      initData();
+      localSave();
+      render();
+      toast('导入成功！数据已刷新', 'success');
+    } catch(err) {
+      toast('导入失败：文件格式错误', 'error');
+    }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+}
+
+// ─── Toast ────────────────────────────────────────
+function toast(msg, type) {
+  const el = document.createElement('div');
+  el.className = 'toast ' + type;
+  el.textContent = msg;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 3000);
+}
+
+// ─── Init ─────────────────────────────────────────
+async function init() {
+  loadSettings();
+  localLoad();
+  // Populate initial data if empty
+  if (data.phases.length === 0) initData();
+
+  // Try loading data.json from same origin (for GitHub Pages first load)
+  if (data.phases.length === 0 || (data.phases.length > 0 && !localStorage.getItem('wb_data'))) {
+    try {
+      const res = await fetch('data.json?' + Date.now());
+      if (res.ok) {
+        const json = await res.json();
+        if (json.phases && json.phases.length > 0) {
+          data = json;
+          initData();
+          localSave();
+        }
+      }
+    } catch(e) { /* data.json not found or not accessible */ }
+  }
+
+  // Auto-sync if configured
+  const c = ghConfig();
+  if (c.token && c.owner && c.repo) {
+    syncNow().catch(() => {});
+  }
+
+  render();
+}
+
+init();
+</script>
+</body>
+</html>
