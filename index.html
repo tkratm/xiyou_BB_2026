@@ -6,23 +6,23 @@
 <title>天青纪 / CELADON</title>
 <style>
 :root {
-  --bg-deep: #b8cdd4;
-  --bg-surface: #c4d6dc;
-  --bg-card: #c0d2d8;
-  --bg-input: #aec4cc;
-  --text-primary: #1f2a30;
-  --text-secondary: #45555c;
-  --text-tertiary: #6a7c82;
-  --accent: #4a7080;
-  --accent-hover: #3a6070;
-  --gold: #b8884a;
-  --gold-dim: #8a6438;
-  --border: rgba(31,42,48,0.10);
-  --border-hover: rgba(31,42,48,0.18);
-  --border-active: rgba(74,112,128,0.5);
-  --danger: #a85a3a;
-  --success: #4a7080;
-  --warning: #b8884a;
+  --bg-deep: #dce6ed;
+  --bg-surface: #d4dee6;
+  --bg-card: #d8e2ea;
+  --bg-input: #ccd6de;
+  --text-primary: #2a3438;
+  --text-secondary: #526068;
+  --text-tertiary: #7a868c;
+  --accent: #6a8fa0;
+  --accent-hover: #5a7f90;
+  --gold: #c49a6c;
+  --gold-dim: #a08060;
+  --border: rgba(42,52,56,0.10);
+  --border-hover: rgba(42,52,56,0.18);
+  --border-active: rgba(106,143,160,0.5);
+  --danger: #c06a4a;
+  --success: #6a8fa0;
+  --warning: #c49a6c;
   --radius-sm: 6px;
   --radius: 10px;
   --radius-lg: 14px;
@@ -32,7 +32,7 @@
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body {
-  background: linear-gradient(180deg, #c8dde4 0%, #b8cdd4 35%, #a8bdc5 100%);
+  background: linear-gradient(180deg, #e4ecf2 0%, #dce6ed 40%, #d0dae2 100%);
   background-attachment: fixed;
   color: var(--text-primary);
   font-family: var(--font-body);
@@ -57,7 +57,7 @@ body {
 .header-tags { display: flex; gap: 8px; margin: 14px 0 0; flex-wrap: wrap; }
 .header-tag {
   font-size: 12px; padding: 3px 12px; border-radius: 3px;
-  background: rgba(74,112,128,0.18); color: var(--accent);
+  background: rgba(106,143,160,0.18); color: var(--accent);
   letter-spacing: 1px;
 }
 
@@ -87,8 +87,8 @@ body {
   border-right: 0.5px solid var(--border); user-select: none;
 }
 .nav-item:last-child { border-right: none; }
-.nav-item.active { background: rgba(74,112,128,0.12); color: var(--accent); font-weight: 500; }
-.nav-item:hover:not(.active) { color: var(--text-secondary); background: rgba(31,42,48,0.04); }
+.nav-item.active { background: rgba(106,143,160,0.12); color: var(--accent); font-weight: 500; }
+.nav-item:hover:not(.active) { color: var(--text-secondary); background: rgba(42,52,56,0.04); }
 
 .phase-card {
   background: var(--bg-card); border: 0.5px solid var(--border);
@@ -106,8 +106,8 @@ body {
   font-family: var(--font-heading); font-size: 16px; font-weight: 500;
   flex-shrink: 0;
 }
-.phase-id.active-phase { background: rgba(74,112,128,0.18); color: var(--accent); }
-.phase-id.idle-phase { background: rgba(31,42,48,0.06); color: var(--text-tertiary); }
+.phase-id.active-phase { background: rgba(106,143,160,0.18); color: var(--accent); }
+.phase-id.idle-phase { background: rgba(42,52,56,0.06); color: var(--text-tertiary); }
 .phase-info { flex: 1; min-width: 0; }
 .phase-name { font-family: var(--font-heading); font-size: 18px; font-weight: 500; letter-spacing: 2px; color: var(--gold); }
 .phase-name.dim { color: var(--gold-dim); }
@@ -119,9 +119,9 @@ body {
   color: var(--text-secondary); font-family: var(--font-body);
   appearance: none; -webkit-appearance: none; text-align: center;
 }
-.phase-status.status-active { border-color: var(--accent); color: var(--accent); background: rgba(74,112,128,0.10); }
+.phase-status.status-active { border-color: var(--accent); color: var(--accent); background: rgba(106,143,160,0.10); }
 .phase-status.status-pending { border-color: var(--border); color: var(--text-tertiary); }
-.phase-status.status-done { border-color: var(--gold); color: var(--gold); background: rgba(184,136,74,0.10); }
+.phase-status.status-done { border-color: var(--gold); color: var(--gold); background: rgba(196,154,108,0.10); }
 .phase-progress { font-family: var(--font-mono); font-size: 13px; color: var(--text-secondary); white-space: nowrap; }
 .phase-arrow {
   font-size: 14px; color: var(--text-tertiary); transition: transform 0.2s;
@@ -136,7 +136,7 @@ body {
   display: flex; align-items: center; gap: 12px; padding: 12px 20px;
   border-top: 0.5px solid var(--border); cursor: pointer; transition: background 0.15s;
 }
-.task-row:hover { background: rgba(31,42,48,0.03); }
+.task-row:hover { background: rgba(42,52,56,0.03); }
 .task-check {
   width: 20px; height: 20px; border-radius: 50%; flex-shrink: 0;
   border: 1.5px solid var(--border); cursor: pointer; transition: all 0.2s;
@@ -149,12 +149,12 @@ body {
 .task-tags { display: flex; gap: 4px; flex-shrink: 0; }
 .task-tag {
   font-size: 11px; padding: 2px 8px; border-radius: 3px;
-  background: rgba(31,42,48,0.06); color: var(--text-secondary);
+  background: rgba(42,52,56,0.06); color: var(--text-secondary);
 }
-.task-tag.done-tag { background: rgba(74,112,128,0.12); color: var(--accent); }
+.task-tag.done-tag { background: rgba(106,143,160,0.12); color: var(--accent); }
 .task-thumb {
   width: 56px; height: 36px; border-radius: 4px; flex-shrink: 0;
-  background: rgba(31,42,48,0.04); overflow: hidden; position: relative;
+  background: rgba(42,52,56,0.04); overflow: hidden; position: relative;
 }
 .task-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .task-thumb-placeholder {
@@ -179,11 +179,11 @@ body {
   border-top: 0.5px solid var(--border);
 }
 .footer-btn {
-  padding: 5px 14px; border-radius: 3px; background: rgba(31,42,48,0.05);
+  padding: 5px 14px; border-radius: 3px; background: rgba(42,52,56,0.05);
   color: var(--text-secondary); cursor: pointer; border: none; font-family: var(--font-body);
   font-size: 12px; transition: all 0.15s;
 }
-.footer-btn:hover { background: rgba(31,42,48,0.10); color: var(--text-primary); }
+.footer-btn:hover { background: rgba(42,52,56,0.10); color: var(--text-primary); }
 .footer-btn.upload-btn:hover { border-color: var(--accent); color: var(--accent); }
 
 .summary-bar {
@@ -196,7 +196,7 @@ body {
 
 .modal-overlay {
   display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-  background: rgba(184,205,212,0.88); z-index: 100;
+  background: rgba(220,230,237,0.88); z-index: 100;
   align-items: center; justify-content: center;
 }
 .modal-overlay.open { display: flex; }
@@ -208,7 +208,7 @@ body {
 .modal-title-row { display: flex; align-items: center; gap: 12px; margin-bottom: 22px; }
 .modal-id {
   font-family: var(--font-heading); font-size: 14px; color: var(--accent);
-  background: rgba(74,112,128,0.12); padding: 4px 12px; border-radius: 3px;
+  background: rgba(106,143,160,0.12); padding: 4px 12px; border-radius: 3px;
 }
 .modal-title-input {
   flex: 1; font-family: var(--font-heading); font-size: 18px; font-weight: 500;
@@ -220,7 +220,7 @@ body {
 .modal-image-area { width: 240px; flex-shrink: 0; }
 .modal-image {
   width: 240px; height: 160px; border-radius: var(--radius-sm);
-  background: rgba(31,42,48,0.04); border: 1px dashed var(--border);
+  background: rgba(42,52,56,0.04); border: 1px dashed var(--border);
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   cursor: pointer; overflow: hidden; position: relative;
 }
@@ -229,7 +229,7 @@ body {
 .modal-image:hover { border-color: var(--accent); }
 .modal-attachments { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
 .modal-attach {
-  width: 64px; height: 42px; border-radius: 4px; background: rgba(31,42,48,0.04);
+  width: 64px; height: 42px; border-radius: 4px; background: rgba(42,52,56,0.04);
   border: 1px dashed var(--border); cursor: pointer; overflow: hidden;
   display: flex; align-items: center; justify-content: center;
   font-size: 11px; color: var(--text-tertiary);
@@ -273,7 +273,7 @@ body {
 .modal-btn.delete { background: transparent; border: 0.5px solid rgba(184,90,58,0.3); color: var(--danger); }
 .modal-btn.delete:hover { border-color: var(--danger); background: rgba(184,90,58,0.08); }
 
-.token-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(184,205,212,0.92); z-index: 200; align-items: center; justify-content: center; }
+.token-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(220,230,237,0.92); z-index: 200; align-items: center; justify-content: center; }
 .token-modal.open { display: flex; }
 .token-box { background: var(--bg-card); border: 0.5px solid var(--border-active); border-radius: var(--radius-lg); padding: 28px; width: 440px; max-width: 90vw; }
 .token-box h3 { font-family: var(--font-heading); font-size: 18px; margin-bottom: 8px; letter-spacing: 1px; }
