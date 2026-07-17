@@ -433,18 +433,39 @@ async function loadData() {
     }
   } else {
     appData = local;
-    // Check if server is newer
-    if (serverDataVersion > localVersion) {
+    // Check if server is newer OR server has more content than local
+    const contentDiff = checkContentDiff(serverData, local);
+    if (serverDataVersion > localVersion || contentDiff) {
       pendingServerData = serverData;
       const banner = document.getElementById('syncBanner');
       const text = document.getElementById('syncBannerText');
       if (banner && text) {
-        const diff = countServerDiff(serverData, local);
-        text.textContent = '弼马温更新了任务板 · 服务器版本 v' + serverDataVersion + '（本地 v' + localVersion + '）' + diff;
+        text.textContent = '弼马温更新了任务板 · 服务器版本 v' + serverDataVersion + '（本地 v' + localVersion + '）' + (contentDiff || '');
         banner.classList.add('show');
       }
     }
   }
+}
+
+// Compare key fields between server and local — catches the case where version matches but content is stale
+function checkContentDiff(server, local) {
+  if (!server || !server.phases || !local || !local.phases) return '（内容差异）';
+  const localMap = {};
+  for (const p of local.phases) for (const t of p.tasks) localMap[t.id] = t;
+  let newTasks = 0, longerNotes = 0;
+  for (const p of server.phases) {
+    for (const t of p.tasks) {
+      const lt = localMap[t.id];
+      if (!lt) { newTasks++; continue; }
+      const serverNotes = (t.notes || '').length;
+      const localNotes = (lt.notes || '').length;
+      if (serverNotes > localNotes + 100) longerNotes++;
+    }
+  }
+  let parts = [];
+  if (newTasks) parts.push(newTasks + ' 项新增');
+  if (longerNotes) parts.push(longerNotes + ' 项内容待同步');
+  return parts.length ? '（' + parts.join('，') + '）' : '';
 }
 
 let pendingServerData = null;
