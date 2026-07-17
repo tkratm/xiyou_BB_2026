@@ -276,6 +276,22 @@ body {
   padding: 12px; resize: vertical; outline: none;
 }
 .modal-notes:focus { border-color: var(--accent); }
+.notes-display {
+  width: 100%; min-height: 120px; max-height: 440px; overflow-y: auto;
+  background: var(--bg-input); border: 0.5px solid var(--border);
+  border-radius: var(--radius-sm); color: var(--text-primary);
+  font-size: 14px; font-family: var(--font-body); padding: 14px;
+  line-height: 1.85; white-space: pre-wrap; word-break: break-word;
+}
+.notes-toolbar { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
+.notes-toolbar .modal-label { margin-bottom: 0; flex: 1; }
+.notes-mini-btn {
+  font-size: 11px; padding: 3px 10px; border-radius: 3px;
+  background: transparent; border: 0.5px solid var(--border);
+  color: var(--text-tertiary); cursor: pointer; font-family: var(--font-body);
+  transition: all 0.2s;
+}
+.notes-mini-btn:hover { border-color: var(--accent); color: var(--accent); }
 .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 24px; }
 .modal-btn {
   font-size: 15px; padding: 9px 22px; border-radius: var(--radius-sm);
@@ -690,8 +706,12 @@ function openTaskDetail(taskId) {
   html += '<option value="completed"' + (task.status==='completed'?' selected':'') + '>已完成</option>';
   html += '</select>';
   html += '</div>';
-  html += '<div class="modal-label">备注</div>';
-  html += '<textarea class="modal-notes" id="editNotes" placeholder="输入备注...">' + escHtml(task.notes || '') + '</textarea>';
+  html += '<div class="notes-toolbar"><div class="modal-label">备注</div>';
+  html += '<button class="notes-mini-btn" onclick="event.stopPropagation();copyNotes()">一键复制</button>';
+  html += '<button class="notes-mini-btn" id="notesToggle" onclick="event.stopPropagation();toggleNotesEdit()">编辑</button>';
+  html += '</div>';
+  html += '<div class="notes-display" id="notesDisplay">' + escHtml(task.notes || '暂无备注') + '</div>';
+  html += '<textarea class="modal-notes" id="editNotes" placeholder="输入备注..." style="display:none">' + escHtml(task.notes || '') + '</textarea>';
   html += '</div>';
   html += '</div>';
 
@@ -723,6 +743,39 @@ async function saveModal() {
   }
   await saveData();
   closeModal();
+}
+
+let notesEditing = false;
+function toggleNotesEdit() {
+  const display = document.getElementById('notesDisplay');
+  const editor = document.getElementById('editNotes');
+  const toggle = document.getElementById('notesToggle');
+  notesEditing = !notesEditing;
+  if (notesEditing) {
+    editor.value = display.textContent === '暂无备注' ? '' : display.textContent;
+    display.style.display = 'none';
+    editor.style.display = 'block';
+    editor.focus();
+    toggle.textContent = '查看';
+  } else {
+    display.textContent = editor.value || '暂无备注';
+    editor.style.display = 'none';
+    display.style.display = 'block';
+    toggle.textContent = '编辑';
+  }
+}
+
+function copyNotes() {
+  const display = document.getElementById('notesDisplay');
+  const text = display.textContent;
+  if (!text || text === '暂无备注') return;
+  navigator.clipboard.writeText(text).then(() => {
+    const btns = document.querySelectorAll('.notes-mini-btn');
+    if (btns.length > 0) {
+      btns[0].textContent = '已复制!';
+      setTimeout(() => { btns[0].textContent = '一键复制'; }, 1500);
+    }
+  });
 }
 
 async function deleteTask(taskId) {
