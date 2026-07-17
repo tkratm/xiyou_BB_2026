@@ -648,18 +648,22 @@ async function pickFile() {
   });
 }
 
+function sanitizeName(str) {
+  return str.replace(/[\\/:*?"<>|]/g, '').replace(/\s+/g, '_').substring(0, 40);
+}
+
 function extFromType(file) {
   const m = file.type.match(/image\/(\w+)/);
   if (m) return m[1] === 'jpeg' ? 'jpg' : m[1];
   return 'png';
 }
 
-async function saveFileToLocal(file, namePrefix) {
+async function saveFileToLocal(file, label) {
   if (!localDirHandle) return;
   try {
     const ts = Date.now();
     const ext = extFromType(file);
-    const fname = namePrefix + '_' + ts + '.' + ext;
+    const fname = label + '_' + ts + '.' + ext;
     const fh = await localDirHandle.getFileHandle(fname, { create: true });
     const writable = await fh.createWritable();
     await writable.write(file);
@@ -892,7 +896,8 @@ async function uploadTaskThumb(taskId) {
   if (!found) return;
   found.task.thumbnail = result.b64;
   await saveData();
-  saveFileToLocal(result.file, 'thumb_' + taskId);
+  const label = sanitizeName(found.task.name) + '_thumb';
+  saveFileToLocal(result.file, label);
 }
 
 async function addPhaseNote(phaseId) {
@@ -911,7 +916,9 @@ async function addPhaseMaterial(phaseId) {
   if (!phase.materials) phase.materials = [];
   phase.materials.push({ data: result.b64, date: new Date().toISOString() });
   await saveData();
-  saveFileToLocal(result.file, 'material_' + phaseId);
+  const phaseDef = PHASES.find(p => p.id === phaseId);
+  const label = (phaseDef ? sanitizeName(phaseDef.name) : phaseId) + '_素材';
+  saveFileToLocal(result.file, label);
 }
 
 function openTaskDetail(taskId) {
@@ -1049,7 +1056,7 @@ async function uploadModalImage() {
   if (!editingTask.task.images) editingTask.task.images = [];
   editingTask.task.images[0] = result.b64;
   await saveData();
-  saveFileToLocal(result.file, 'image_' + editingTask.task.id);
+  saveFileToLocal(result.file, sanitizeName(editingTask.task.name) + '_主图');
   openTaskDetail(editingTask.task.id);
 }
 
@@ -1060,7 +1067,7 @@ async function uploadAttachment() {
   if (!editingTask.task.attachments) editingTask.task.attachments = [];
   editingTask.task.attachments.push(result.b64);
   await saveData();
-  saveFileToLocal(result.file, 'attach_' + editingTask.task.id);
+  saveFileToLocal(result.file, sanitizeName(editingTask.task.name) + '_附件');
   openTaskDetail(editingTask.task.id);
 }
 
