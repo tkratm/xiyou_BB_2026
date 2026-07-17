@@ -3,10 +3,10 @@
     "project": "碧波烬",
     "subtitle": "四镜头概念切片",
     "board": "沉渊录",
-    "version": 10,
-    "updated": "2026-07-17T22:50:00+08:00",
-    "lastPush": "2026-07-18T01:05:00+08:00",
-    "pushNote": "Oldboy拉片分析 + GPT分镜prompt就绪"
+    "version": 11,
+    "updated": "2026-07-18T01:15:00+08:00",
+    "lastPush": "2026-07-18T01:15:00+08:00",
+    "pushNote": "新增本地素材库绑定功能 (File System Access API)"
   },
   "phases": [
     {

@@ -222,6 +222,18 @@ body {
 .footer-btn:hover { background: rgba(106,143,160,0.08); color: var(--accent); border-color: var(--accent); }
 .footer-btn.upload-btn:hover { border-color: var(--accent); color: var(--accent); }
 
+.local-dir-btn {
+  padding: 4px 12px; border-radius: 3px; background: transparent;
+  color: var(--text-tertiary); cursor: pointer; border: 1px dashed var(--border);
+  font-family: var(--font-body); font-size: 12px; transition: all 0.15s;
+}
+.local-dir-btn:hover { border-color: var(--accent); color: var(--accent); }
+.local-dir-btn.bound { border-style: solid; border-color: var(--success); color: var(--success); }
+.local-dir-status {
+  font-size: 11px; color: var(--success); margin-left: 4px;
+  max-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+
 .summary-bar {
   display: flex; align-items: center; justify-content: space-between;
   padding: 16px 0; font-size: 14px; color: var(--text-secondary);
@@ -376,6 +388,7 @@ let appData = null;
 let db = null;
 let activePhase = 's1';
 let editingTask = null;
+let localDirHandle = null; // File System Access API handle
 
 function openDB() {
   return new Promise((resolve, reject) => {
@@ -619,7 +632,7 @@ function imageUrl(dataUrl) {
   return dataUrl;
 }
 
-async function uploadFileAsBase64() {
+async function pickFile() {
   return new Promise((resolve) => {
     const input = document.createElement('input');
     input.type = 'file';
@@ -628,11 +641,66 @@ async function uploadFileAsBase64() {
       const file = input.files[0];
       if (!file) { resolve(null); return; }
       const reader = new FileReader();
-      reader.onload = () => resolve(reader.result);
+      reader.onload = () => resolve({ b64: reader.result, file: file });
       reader.readAsDataURL(file);
     };
     input.click();
   });
+}
+
+function extFromType(file) {
+  const m = file.type.match(/image\/(\w+)/);
+  if (m) return m[1] === 'jpeg' ? 'jpg' : m[1];
+  return 'png';
+}
+
+async function saveFileToLocal(file, namePrefix) {
+  if (!localDirHandle) return;
+  try {
+    const ts = Date.now();
+    const ext = extFromType(file);
+    const fname = namePrefix + '_' + ts + '.' + ext;
+    const fh = await localDirHandle.getFileHandle(fname, { create: true });
+    const writable = await fh.createWritable();
+    await writable.write(file);
+    await writable.close();
+    console.log('Local saved:', fname);
+  } catch(e) {
+    console.warn('Local save failed:', e);
+  }
+}
+
+async function selectLocalDir() {
+  if (!('showDirectoryPicker' in window)) {
+    alert('当前浏览器不支持本地文件访问。请使用 Chrome 86+ 或 Edge 86+。');
+    return;
+  }
+  try {
+    localDirHandle = await showDirectoryPicker({ mode: 'readwrite' });
+    const btn = document.getElementById('localDirBtn');
+    const status = document.getElementById('localDirStatus');
+    btn.textContent = '已绑定';
+    btn.classList.add('bound');
+    status.textContent = localDirHandle.name;
+    status.style.display = 'inline';
+    localStorage.setItem('wb_local_dir_name', localDirHandle.name);
+    console.log('Local dir bound:', localDirHandle.name);
+  } catch(e) {
+    if (e.name !== 'AbortError') console.warn('Select dir failed:', e);
+  }
+}
+
+function checkLocalDirSupport() {
+  if (!('showDirectoryPicker' in window)) {
+    document.getElementById('localDirBtn').style.display = 'none';
+    return;
+  }
+  const prevName = localStorage.getItem('wb_local_dir_name');
+  if (prevName) {
+    document.getElementById('localDirBtn').textContent = '重新绑定';
+    document.getElementById('localDirStatus').textContent = prevName;
+    document.getElementById('localDirStatus').style.display = 'inline';
+  }
 }
 
 function render() {
@@ -655,6 +723,9 @@ function render() {
   html += '<div class="toolbar">';
   html += '<div><span class="sync-status" id="syncStatus"></span></div>';
   html += '<button class="sync-btn" onclick="checkForUpdates()">检查更新</button> <button class="sync-btn" onclick="syncFromGitHub()">GitHub Sync</button>';
+  html += '<span style="margin-left:8px;">|</span>';
+  html += '<button class="local-dir-btn" id="localDirBtn" onclick="selectLocalDir()" title="选择本地素材文件夹，上传图片时自动同步">绑定本地目录</button>';
+  html += '<span class="local-dir-status" id="localDirStatus" style="display:none" title="已绑定的本地目录"></span>';
   html += '</div>';
 
   html += '<div class="sync-banner" id="syncBanner">';
@@ -815,12 +886,13 @@ function moveTask(phaseId, taskId, direction) {
 }
 
 async function uploadTaskThumb(taskId) {
-  const b64 = await uploadFileAsBase64();
-  if (!b64) return;
+  const result = await pickFile();
+  if (!result || !result.b64) return;
   const found = findTask(taskId);
   if (!found) return;
-  found.task.thumbnail = b64;
+  found.task.thumbnail = result.b64;
   await saveData();
+  saveFileToLocal(result.file, 'thumb_' + taskId);
 }
 
 async function addPhaseNote(phaseId) {
@@ -833,12 +905,13 @@ async function addPhaseNote(phaseId) {
 }
 
 async function addPhaseMaterial(phaseId) {
-  const b64 = await uploadFileAsBase64();
-  if (!b64) return;
+  const result = await pickFile();
+  if (!result || !result.b64) return;
   const phase = getPhase(phaseId);
   if (!phase.materials) phase.materials = [];
-  phase.materials.push({ data: b64, date: new Date().toISOString() });
+  phase.materials.push({ data: result.b64, date: new Date().toISOString() });
   await saveData();
+  saveFileToLocal(result.file, 'material_' + phaseId);
 }
 
 function openTaskDetail(taskId) {
@@ -971,21 +1044,23 @@ async function deleteTask(taskId) {
 
 async function uploadModalImage() {
   if (!editingTask) return;
-  const b64 = await uploadFileAsBase64();
-  if (!b64) return;
+  const result = await pickFile();
+  if (!result || !result.b64) return;
   if (!editingTask.task.images) editingTask.task.images = [];
-  editingTask.task.images[0] = b64;
+  editingTask.task.images[0] = result.b64;
   await saveData();
+  saveFileToLocal(result.file, 'image_' + editingTask.task.id);
   openTaskDetail(editingTask.task.id);
 }
 
 async function uploadAttachment() {
   if (!editingTask) return;
-  const b64 = await uploadFileAsBase64();
-  if (!b64) return;
+  const result = await pickFile();
+  if (!result || !result.b64) return;
   if (!editingTask.task.attachments) editingTask.task.attachments = [];
-  editingTask.task.attachments.push(b64);
+  editingTask.task.attachments.push(result.b64);
   await saveData();
+  saveFileToLocal(result.file, 'attach_' + editingTask.task.id);
   openTaskDetail(editingTask.task.id);
 }
 
@@ -1063,6 +1138,7 @@ function saveToken() {
 
 async function init() {
   await loadData();
+  checkLocalDirSupport();
   render();
 }
 
